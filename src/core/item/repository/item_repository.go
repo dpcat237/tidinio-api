@@ -1,27 +1,23 @@
 package item_repository
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/tidinio/src/core/component/repository"
 	"github.com/tidinio/src/core/item/model"
+	"fmt"
 )
 
 const itemTable  = item_model.ItemTable
 
-type ItemRepository struct {
-	db *gorm.DB
+func GetItemByLink(repo common_repository.Repository, link string) item_model.Item {
+	item := item_model.Item{}
+	repo.DB.Where("link = ?", link).First(&item)
+
+	return item
 }
 
-func NewItemRepository() ItemRepository {
-	repo := ItemRepository{}
-	repo.db = common_repository.InitConnection()
-
-	return repo
-}
-
-func GetItemByIds(repo ItemRepository, ids []string) []item_model.Item {
+func GetItemsByIds(repo common_repository.Repository, ids []string) []item_model.Item {
 	items := []item_model.Item{}
-	repo.db.
+	repo.DB.
 		Table(itemTable).
 		Select("item.id, item.feed_id, item.title, item.link, item.content, item.created_at, feed.language").
 		Joins("inner join feed on item.feed_id = feed.id and item.id IN(?)", ids).
@@ -30,9 +26,9 @@ func GetItemByIds(repo ItemRepository, ids []string) []item_model.Item {
 	return items
 }
 
-func GetReadItems(repo ItemRepository, userId uint, unreadIds []string) []item_model.Item {
+func GetReadItems(repo common_repository.Repository, userId uint, unreadIds []string) []item_model.Item {
 	results := []item_model.Item{}
-	repo.db.
+	repo.DB.
 		Table(itemTable).
 		Select(itemTable + ".id").
 		Joins(
@@ -42,4 +38,13 @@ func GetReadItems(repo ItemRepository, userId uint, unreadIds []string) []item_m
 		Scan(&results)
 
 	return results
+}
+
+func SaveSharedItem(repo common_repository.Repository, item item_model.Item) item_model.Item {
+	query := fmt.Sprintf(
+		"INSERT INTO " + itemTable + " (title, link) VALUES('%s', '%s');",
+		item.Title, item.Link)
+	repo.DB.Exec(query)
+
+	return GetItemByLink(repo, item.Link)
 }

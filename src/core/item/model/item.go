@@ -15,3 +15,6 @@ type Item struct {
 	FeedId uint
 }
 
+func (Item) TableName() string {
+	return ItemTable
+}

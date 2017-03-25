@@ -1,7 +1,6 @@
 package item_repository
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/tidinio/src/core/item/model"
 	"github.com/tidinio/src/core/component/repository"
 	"fmt"
@@ -10,23 +9,19 @@ import (
 
 const userItemTable = item_model.UserItemTable
 
-type UserItemRepository struct {
-	db *gorm.DB
-}
-
-func CountUnreadByUser(repo UserItemRepository, userId uint) int {
+func CountUnreadByUser(repo common_repository.Repository, userId uint) int {
 	count := 0
-	repo.db.Table("user_item").Select("id").Where("shared = ? AND unread = ? AND user_id = ?", 0, 1, userId).Count(&count)
+	repo.DB.Table("user_item").Select("id").Where("shared = ? AND unread = ? AND user_id = ?", 0, 1, userId).Count(&count)
 
 	return count
 }
 
-func Close(userItemRepo UserItemRepository) {
-	userItemRepo.db.Close()
+func Close(repo common_repository.Repository) {
+	repo.DB.Close()
 }
 
 func GetUnreadUserItems(
-userItemRepo UserItemRepository,
+repo common_repository.Repository,
 userId uint,
 unreadIds []string,
 offset int,
@@ -34,7 +29,7 @@ limit int) []item_model.UserItem {
 	results := []item_model.UserItem{}
 	iTb := "item"
 	ufTb := "user_feed"
-	userItemRepo.db.
+	repo.DB.
 		Table(userItemTable).
 		Select(userItemTable + ".id, " + userItemTable + ".stared, " + userItemTable + ".unread, " + userItemTable + ".item_id").
 		Joins(
@@ -51,15 +46,23 @@ limit int) []item_model.UserItem {
 	return results
 }
 
-func NewUserItemRepository() UserItemRepository {
-	userItemRepo := UserItemRepository{}
-	userItemRepo.db = common_repository.InitConnection()
+func GetUserItemByItemUserId(repo common_repository.Repository, itemId uint, userId uint) item_model.UserItem {
+	userItem := item_model.UserItem{}
+	repo.DB.Where("item_id = ? AND user_id = ?", itemId, userId).First(&userItem)
 
-	return userItemRepo
+	return userItem
 }
 
-func SyncReadItems(repo UserItemRepository, items []item_model.UserItem) {
-	tx := repo.db.Begin()
+func SaveUserItem(repo common_repository.Repository, userItem *item_model.UserItem) {
+	if (repo.DB.NewRecord(userItem)) {
+		repo.DB.Create(&userItem)
+	} else {
+		repo.DB.Save(&userItem)
+	}
+}
+
+func SyncReadItems(repo common_repository.Repository, items []item_model.UserItem) {
+	tx := repo.DB.Begin()
 	now := time.Now().Format("2006-01-02 15:04:05")
 
 	for _, item := range items {

@@ -3,6 +3,7 @@ package user_handler
 import (
 	"github.com/tidinio/src/core/user/model"
 	"github.com/tidinio/src/core/user/repository"
+	"github.com/tidinio/src/core/component/repository"
 )
 
 func CreateBasicUser() {
@@ -13,5 +14,5 @@ func CreateBasicUser() {
 }
 
 func GetUserByDeviceId(deviceId string) user_model.UserBasic {
-	return user_repository.GetUserByDeviceKey(user_repository.NewUserRepository(), deviceId)
+	return user_repository.GetUserByDeviceKey(common_repository.InitConnection(), deviceId)
 }

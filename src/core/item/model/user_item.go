@@ -13,10 +13,14 @@ type UserItem struct {
 
 	ItemId uint
 	//TagItemId int
-	UserId int
+	UserId uint
 	Unread int
 	Stared int
 	Shared int
+}
+
+func (UserItem) TableName() string {
+	return UserItemTable
 }
 
 type UserItemSync struct {
@@ -30,12 +34,14 @@ type UserItemSync struct {
 	CreatedAt time.Time `json:"date_add"`
 }
 
-func (UserItem) TableName() string {
-	return UserItemTable
+type SharedItem struct {
+	TagId uint      `json:"tag_id"`
+	Title string    `json:"title"`
+	Link  string    `json:"link"`
 }
 
-func IsUnread(userItem UserItem) bool {
-	if (userItem.Unread > 0) {
+func (item UserItem) IsUnread() bool {
+	if (item.Unread > 0) {
 		return true
 	}
 

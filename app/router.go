@@ -25,6 +25,12 @@ var routes = Routes{
 	},
 	/** Item **/
 	Route{
+		"Add shared article",
+		"POST",
+		"/article/add_shared",
+		controller.AddSharedItem,
+	},
+	Route{
 		"Sync items",
 		"POST",
 		"/article/sync",

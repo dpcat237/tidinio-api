@@ -6,30 +6,22 @@ import (
 	"fmt"
 )
 
-func InitConnection() (db *gorm.DB) {
+type Repository struct {
+	DB *gorm.DB
+}
+
+func InitConnection() Repository {
+	repo := Repository{}
 	db, err := gorm.Open("mysql", "tidinio:pwd@tcp(dbcontainer:3306)/tidinio?charset=utf8&parseTime=True")
 	if err != nil {
 		//log.Println("err happened", err)
 		fmt.Println("err happened", err)
 	}
-	//defer db.Close()
 	//db.DB().SetMaxIdleConns(1)
 	db.LogMode(true)
+	repo.DB = db
 
-	return db
-}
-
-func InitConnectionP() (db *gorm.DB) {
-	db, err := gorm.Open("postgres", "host=postgres user=tidinio dbname=tidinio sslmode=disable password=pwd")
-	if err != nil {
-		//log.Println("err happened", err)
-		fmt.Println("err happened", err)
-	}
-	//defer db.Close()
-	//db.DB().SetMaxIdleConns(1)
-	db.LogMode(true)
-
-	return db
+	return repo
 }
 
 func BoolToInt(value bool) int {
@@ -38,6 +30,10 @@ func BoolToInt(value bool) int {
 	}
 
 	return 0
+}
+
+func (repo Repository) Close()  {
+	repo.DB.Close()
 }
 
 func IntToBool(value int) bool {

@@ -35,9 +35,9 @@ type UserItemSync struct {
 }
 
 type SharedItem struct {
-	TagId uint      `json:"tag_id"`
-	Title string    `json:"title"`
-	Link  string    `json:"link"`
+	TagId uint   `json:"tag_id"`
+	Title string `json:"title"`
+	Link  string `json:"link"`
 }
 
 func (item UserItem) IsUnread() bool {
@@ -60,6 +60,14 @@ func MergeToUserItemSync(item Item, userItem UserItem) UserItemSync {
 	result.CreatedAt = item.CreatedAt
 
 	return result
+}
+
+func MergeUserItems(collection1 []UserItem, collection2 []UserItem) []UserItem {
+	for _, value := range collection2 {
+		collection1 = append(collection1, value)
+	}
+
+	return collection1
 }
 
 func ReadToUserItemSync(userItem UserItem) UserItemSync {

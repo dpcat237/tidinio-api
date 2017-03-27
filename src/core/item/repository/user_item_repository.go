@@ -11,7 +11,7 @@ const userItemTable = item_model.UserItemTable
 
 func CountUnreadByUser(repo common_repository.Repository, userId uint) int {
 	count := 0
-	repo.DB.Table("user_item").Select("id").Where("shared = ? AND unread = ? AND user_id = ?", 0, 1, userId).Count(&count)
+	repo.DB.Table(userItemTable).Select("id").Where("shared = ? AND unread = ? AND user_id = ?", 0, 1, userId).Count(&count)
 
 	return count
 }
@@ -41,6 +41,23 @@ limit int) []item_model.UserItem {
 		Order("" + userItemTable + ".item_id desc").
 		Offset(offset).
 		Limit(limit).
+		Scan(&results)
+
+	return results
+}
+
+func GetUnreadUserItemsContent(repo common_repository.Repository, unreadIds []string) []item_model.TagItemList {
+	results := []item_model.TagItemList{}
+	iTb := "item"
+	fTb := "feed"
+	repo.DB.
+		Table(userItemTable).
+		Select(userItemTable + ".id article_id, " + fTb + ".id feed_id, " + userItemTable + ".stared, " + fTb +
+			".language, " + iTb + ".link, " + iTb + ".title, " + iTb + ".content, " + iTb + ".created_at").
+		Joins(
+			"inner join " + iTb + " on " + userItemTable + ".item_id = " + iTb + ".id " +
+			"and " + userItemTable + ".id IN(?) " +
+			"left join " + fTb + " on " + iTb + ".feed_id=" + fTb + ".id ", unreadIds).
 		Scan(&results)
 
 	return results

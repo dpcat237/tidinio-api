@@ -1,6 +1,9 @@
 package item_model
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"time"
+)
 
 const TagItemTable = "later_item"
 
@@ -10,6 +13,18 @@ type TagItem struct {
 	UserItemId uint
 	TagId      uint `gorm:"column:later_id"`
 	Unread     int
+}
+
+type TagItemList struct {
+	ArticleId uint      `json:"article_id" gorm:"column:user_item_id"`
+	FeedId    uint      `json:"feed_id"`
+	Language  string    `json:"language"`
+	Stared    bool      `json:"is_stared"`
+	Link      string    `json:"link"`
+	Title     string    `json:"title"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"date_add"`
+	Tags      []uint    `json:"tags"`
 }
 
 func (TagItem) TableName() string {
@@ -22,4 +37,54 @@ func (item TagItem) IsUnread() bool {
 	}
 
 	return false
+}
+
+func AddTagItemsListContent(tagItems []TagItemList, tagItemsContent []TagItemList) []TagItemList {
+	for _, tagItem := range tagItems {
+		for _, tagItemContent := range tagItemsContent {
+			if (tagItem.ArticleId == tagItemContent.ArticleId) {
+				tagItemContent.Tags = tagItem.Tags
+			}
+		}
+	}
+
+	return tagItemsContent
+}
+
+func JoinTagsByUserItem(tagItems []TagItem) map[uint][]uint {
+	joined := make(map[uint][]uint)
+	for _, tagItem := range tagItems {
+		joined[tagItem.UserItemId] = append(joined[tagItem.UserItemId], tagItem.TagId)
+	}
+
+	return joined
+}
+
+func MergeTagItemsList(collection1 []TagItemList, collection2 []TagItemList) []TagItemList {
+	for _, value := range collection2 {
+		collection1 = append(collection1, value)
+	}
+
+	return collection1
+}
+
+func MergeToTagItemList(userItemId uint, tagsIds []uint) TagItemList {
+	item := TagItemList{}
+	item.ArticleId = userItemId
+	item.Tags = tagsIds
+
+	return item
+}
+
+func MergeToTagItemsList(tagItems []TagItem, relatedTags map[uint][]uint) []TagItemList {
+	results := []TagItemList{}
+	for _, tagItem := range tagItems {
+		for userItemId, tags := range relatedTags {
+			if (tagItem.UserItemId == userItemId) {
+				results = append(results, MergeToTagItemList(tagItem.UserItemId, tags))
+			}
+		}
+	}
+
+	return results
 }

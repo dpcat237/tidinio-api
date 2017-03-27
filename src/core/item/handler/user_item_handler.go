@@ -82,9 +82,6 @@ func getUnreadItems(userId uint, collection []item_model.UserItem, limit int) []
 func getUnreadItemsRecursive(userId uint, unreadIds []string, offset int, limit int, totalUnread int, repo common_repository.Repository) []item_model.UserItem {
 	unreadItems := item_repository.GetUnreadUserItems(repo, userId, unreadIds, offset, limit)
 	unreadCount := len(unreadItems)
-	if (unreadCount < 1) {
-		return unreadItems
-	}
 
 	offset += unreadCount
 	if (unreadCount >= limit || (offset + 1) >= totalUnread || limit < 5) {
@@ -98,7 +95,7 @@ func getUnreadItemsRecursive(userId uint, unreadIds []string, offset int, limit 
 	}
 	moreUnreadItems := getUnreadItemsRecursive(userId, unreadIds, offset, limit, totalUnread, repo)
 
-	return mergeUserItems(unreadItems, moreUnreadItems)
+	return item_model.MergeUserItems(unreadItems, moreUnreadItems)
 }
 
 func mergeUserItemData(items []item_model.Item, userItems []item_model.UserItem) []item_model.UserItemSync {
@@ -112,14 +109,6 @@ func mergeUserItemData(items []item_model.Item, userItems []item_model.UserItem)
 	}
 
 	return results
-}
-
-func mergeUserItems(collection1 []item_model.UserItem, collection2 []item_model.UserItem) []item_model.UserItem {
-	for _, value := range collection2 {
-		collection1 = append(collection1, value)
-	}
-
-	return collection1
 }
 
 func syncReadItems(items []item_model.UserItem) {

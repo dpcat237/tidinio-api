@@ -36,6 +36,12 @@ var routes = Routes{
 		"/article/sync",
 		controller.SyncItems,
 	},
+	Route{
+		"Get saved articles",
+		"POST",
+		"/saved_article/list",
+		controller.ListTagItems,
+	},
 	/** User **/
 	Route{
 		"User register",

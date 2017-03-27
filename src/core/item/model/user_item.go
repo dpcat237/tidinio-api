@@ -24,7 +24,7 @@ func (UserItem) TableName() string {
 }
 
 type UserItemSync struct {
-	ID        uint      `json:"id"`
+	ID        uint      `json:"article_id"`
 	FeedId    uint      `json:"feed_id"`
 	Title     string    `json:"title"`
 	Link      string    `json:"link"`

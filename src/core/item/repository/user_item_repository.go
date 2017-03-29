@@ -11,7 +11,7 @@ const userItemTable = item_model.UserItemTable
 
 func CountUnreadByUser(repo common_repository.Repository, userId uint) int {
 	count := 0
-	repo.DB.Table(userItemTable).Select("id").Where("shared = ? AND unread = ? AND user_id = ?", 0, 1, userId).Count(&count)
+	repo.DB.Table(userItemTable).Select("count(id)").Where("shared = ? AND unread = ? AND user_id = ?", 0, 1, userId).Count(&count)
 
 	return count
 }
@@ -86,6 +86,19 @@ func SyncReadItems(repo common_repository.Repository, items []item_model.UserIte
 		query := fmt.Sprintf(
 			"UPDATE user_item SET stared='%d', unread='%d', updated_at='%s' WHERE id='%d';",
 			item.Stared, item.Unread, now, item.ID)
+		tx.Exec(query)
+	}
+	tx.Commit()
+}
+
+func UpdateUserItemsStaredStatus(repo common_repository.Repository, items []item_model.TagItemList)  {
+	tx := repo.DB.Begin()
+	now := time.Now().Format("2006-01-02 15:04:05")
+
+	for _, item := range items {
+		query := fmt.Sprintf(
+			"UPDATE user_item SET stared='%d', updated_at='%s' WHERE id='%d';",
+			common_repository.BoolToInt(item.Stared), now, item.ArticleId)
 		tx.Exec(query)
 	}
 	tx.Commit()

@@ -27,6 +27,18 @@ type TagItemList struct {
 	Tags      []uint    `json:"tags"`
 }
 
+type TagItemSync struct {
+	ArticleId uint      `json:"article_id" gorm:"column:user_item_id"`
+	Stared    bool      `json:"is_stared"`
+	Tags      []uint    `json:"tags"`
+}
+
+type TagItemSyncDB struct {
+	ArticleId uint      `gorm:"column:user_item_id"`
+	Stared    bool      `json:"is_stared"`
+	TagId     uint      `gorm:"column:later_id"`
+}
+
 func (TagItem) TableName() string {
 	return TagItemTable
 }
@@ -49,6 +61,16 @@ func AddTagItemsListContent(tagItems []TagItemList, tagItemsContent []TagItemLis
 	}
 
 	return tagItemsContent
+}
+
+func (item TagItemList) HasTag(tagId uint) bool {
+	for _, tag := range item.Tags {
+		if (tag  == tagId) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func JoinTagsByUserItem(tagItems []TagItem) map[uint][]uint {

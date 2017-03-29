@@ -5,6 +5,16 @@ import (
 	"fmt"
 )
 
+func CheckIdExistInCollection(id uint, collection []uint) bool {
+	for _, key := range collection {
+		if (key == id) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func ConvertIntToStringSlice(collection []uint) []string {
 	result := make([]string, len(collection))
 	for key, item := range collection {
@@ -48,4 +58,22 @@ func GetUserItemIdsFromTagItemListCollectionStr(collection []item_model.TagItemL
 	}
 
 	return ids
+}
+
+func MoveTagItemsUnderUserItemId(collection []item_model.TagItem) map[uint][]item_model.TagItem {
+	joined := make(map[uint][]item_model.TagItem)
+	for _, tagItem := range collection {
+		joined[tagItem.UserItemId] = append(joined[tagItem.UserItemId], tagItem)
+	}
+
+	return joined
+}
+
+func MoveTagItemsListUnderUserItemId(collection []item_model.TagItemList) map[uint]item_model.TagItemList {
+	joined := make(map[uint]item_model.TagItemList)
+	for _, tagItem := range collection {
+		joined[tagItem.ArticleId] = tagItem
+	}
+
+	return joined
 }

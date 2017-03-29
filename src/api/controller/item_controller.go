@@ -22,6 +22,10 @@ type syncItems struct {
 	Articles []item_model.UserItemSync
 }
 
+type syncTagItems struct {
+	SavedArticles []item_model.TagItemList `json:"saved_articles"`
+}
+
 func AddSharedItem(w http.ResponseWriter, r *http.Request) {
 	data := sharedItems{}
 	user, err := common_controller.GetAuthContent(w, r, &data)
@@ -55,5 +59,16 @@ func SyncItems(w http.ResponseWriter, r *http.Request) {
 	}
 
 	items := item_handler.SyncItems(user.ID, data.Articles, data.Limit)
+	common_controller.ReturnJson(w, items)
+}
+
+func SyncTagItems(w http.ResponseWriter, r *http.Request) {
+	data := syncTagItems{}
+	_, err := common_controller.GetAuthContent(w, r, &data)
+	if err != nil {
+		return
+	}
+
+	items := item_handler.SyncTagItems(data.SavedArticles)
 	common_controller.ReturnJson(w, items)
 }

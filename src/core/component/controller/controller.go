@@ -4,10 +4,10 @@ import (
 	"io/ioutil"
 	"io"
 	"net/http"
-	"github.com/tidinio/src/core/component/model"
 	"github.com/tidinio/src/core/user/handler"
 	"github.com/tidinio/src/core/user/model"
 	"encoding/json"
+	"errors"
 )
 
 func GetAuthContent(w http.ResponseWriter, r *http.Request, data interface{}) (user_model.UserBasic, error)   {
@@ -16,7 +16,7 @@ func GetAuthContent(w http.ResponseWriter, r *http.Request, data interface{}) (u
 	if err != nil || deviceId == "" {
 		ReturnPreconditionFailed(w, "Authentification failed")
 
-		return user_model.UserBasic{}, common_error.NewError("Authentification failed")
+		return user_model.UserBasic{}, errors.New("Authentification failed")
 	}
 	user := user_handler.GetUserByDeviceId(deviceId)
 	json.Unmarshal(body, data)

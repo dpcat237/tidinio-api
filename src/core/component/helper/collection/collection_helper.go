@@ -1,4 +1,4 @@
-package helper_collection
+package collection_helper
 
 import (
 	"github.com/tidinio/src/core/item/model"

@@ -18,10 +18,10 @@ type Routes []Route
 var routes = Routes{
 	/** Feed **/
 	Route{
-		"Index",
-		"GET",
-		"/",
-		controller.Index,
+		"Add feed, subscribe user to this feed and add last items for user",
+		"POST",
+		"/feed/add",
+		controller.AddFeed,
 	},
 	/** Item **/
 	Route{

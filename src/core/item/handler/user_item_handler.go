@@ -4,8 +4,8 @@ import (
 	"github.com/tidinio/src/core/item/model"
 	"github.com/tidinio/src/core/item/repository"
 	"github.com/tidinio/src/core/item/data_transformer"
-	"github.com/tidinio/src/core/component/helper"
 	"github.com/tidinio/src/core/component/repository"
+	"github.com/tidinio/src/core/component/helper/collection"
 )
 
 func SyncItems(userId uint, collection []item_model.UserItemSync, limit int) []item_model.UserItemSync {
@@ -23,6 +23,19 @@ func SyncItems(userId uint, collection []item_model.UserItemSync, limit int) []i
 	return getUnreadItems(userId, unreadItems, limit)
 }
 
+func AddLastItemsNewUser(userId uint, feedId uint, quantity int) {
+	repo := common_repository.InitConnection()
+	items := item_repository.GetLastItems(repo, feedId, quantity)
+	for _, item := range items {
+		userItem := item_repository.GetUserItemByItemUserId(repo, item.ID, userId)
+		if (userItem.ID < 1) {
+			createUserItem(repo, userId, item.ID)
+		}
+	}
+
+	defer repo.Close()
+}
+
 func addReadItems(userItems []item_model.UserItemSync, unreadUserItems []item_model.UserItem, items []item_model.Item) []item_model.UserItemSync {
 	for _, item := range items {
 		for _, unreadUserItem := range unreadUserItems {
@@ -35,12 +48,11 @@ func addReadItems(userItems []item_model.UserItemSync, unreadUserItems []item_mo
 	return userItems
 }
 
-func createUserItem(userId uint, itemId uint) item_model.UserItem {
+func createUserItem(repo common_repository.Repository, userId uint, itemId uint) item_model.UserItem {
 	userItem := item_model.UserItem{}
 	userItem.UserId = userId
 	userItem.ItemId = itemId
-
-	repo := common_repository.InitConnection()
+	userItem.SetUnread()
 	item_repository.SaveUserItem(repo, &userItem)
 
 	return userItem
@@ -60,10 +72,10 @@ func filterUnread(items []item_model.UserItem, unread bool) []item_model.UserIte
 func getUnreadItems(userId uint, collection []item_model.UserItem, limit int) []item_model.UserItemSync {
 	userItems := []item_model.UserItemSync{}
 	repo := common_repository.InitConnection()
-	unreadIds := helper_collection.GetIdsFromUserItemCollectionStr(collection)
+	unreadIds := collection_helper.GetIdsFromUserItemCollectionStr(collection)
 	totalUnread := item_repository.CountUnreadByUser(repo, userId)
 	unreadUserItems := getUnreadItemsRecursive(userId, unreadIds, 0, limit, totalUnread, repo)
-	unreadItemsIds := helper_collection.GetItemIdsFromUserItemCollectionStr(unreadUserItems)
+	unreadItemsIds := collection_helper.GetItemIdsFromUserItemCollectionStr(unreadUserItems)
 	if (len(unreadItemsIds) > 0) {
 		items := item_repository.GetItemsByIds(repo, unreadItemsIds)
 		userItems = mergeUserItemData(items, unreadUserItems)

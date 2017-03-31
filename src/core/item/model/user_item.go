@@ -12,7 +12,6 @@ type UserItem struct {
 	gorm.Model
 
 	ItemId uint
-	//TagItemId int
 	UserId uint
 	Unread int
 	Stared int
@@ -31,7 +30,7 @@ type UserItemSync struct {
 	Content   string    `json:"content"`
 	Stared    bool      `json:"is_stared"`
 	Unread    bool      `json:"is_unread"`
-	CreatedAt time.Time `json:"date_add"`
+	PublishedAt time.Time `json:"date_add"`
 }
 
 type SharedItem struct {
@@ -57,7 +56,7 @@ func MergeToUserItemSync(item Item, userItem UserItem) UserItemSync {
 	result.Content = item.Content
 	result.Stared = common_repository.IntToBool(userItem.Stared)
 	result.Unread = common_repository.IntToBool(userItem.Unread)
-	result.CreatedAt = item.CreatedAt
+	result.PublishedAt = item.PublishedAt
 
 	return result
 }
@@ -78,4 +77,8 @@ func ReadToUserItemSync(userItem UserItem) UserItemSync {
 	result.Unread = false
 
 	return result
+}
+
+func (userItem *UserItem) SetUnread() {
+	userItem.Unread = 1
 }

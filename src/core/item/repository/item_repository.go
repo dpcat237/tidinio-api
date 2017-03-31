@@ -19,9 +19,16 @@ func GetItemsByIds(repo common_repository.Repository, ids []string) []item_model
 	items := []item_model.Item{}
 	repo.DB.
 		Table(itemTable).
-		Select("item.id, item.feed_id, item.title, item.link, item.content, item.created_at, feed.language").
+		Select("item.id, item.feed_id, item.title, item.link, item.content, item.created_at, item.published_at, feed.language").
 		Joins("inner join feed on item.feed_id = feed.id and item.id IN(?)", ids).
 		Scan(&items)
+
+	return items
+}
+
+func GetLastItems(repo common_repository.Repository, feedId uint, limit int) []item_model.Item {
+	items := []item_model.Item{}
+	repo.DB.Table(itemTable).Where("feed_id = ?", feedId).Limit(limit).Scan(&items)
 
 	return items
 }
@@ -38,6 +45,14 @@ func GetReadItems(repo common_repository.Repository, userId uint, unreadIds []st
 		Scan(&results)
 
 	return results
+}
+
+func SaveItem(repo common_repository.Repository, item *item_model.Item) {
+	if (repo.DB.NewRecord(item)) {
+		repo.DB.Create(&item)
+	} else {
+		repo.DB.Save(&item)
+	}
 }
 
 func SaveSharedItem(repo common_repository.Repository, item item_model.Item) item_model.Item {

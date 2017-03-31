@@ -16,15 +16,15 @@ type TagItem struct {
 }
 
 type TagItemList struct {
-	ArticleId uint      `json:"article_id" gorm:"column:user_item_id"`
-	FeedId    uint      `json:"feed_id"`
-	Language  string    `json:"language"`
-	Stared    bool      `json:"is_stared"`
-	Link      string    `json:"link"`
-	Title     string    `json:"title"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"date_add"`
-	Tags      []uint    `json:"tags"`
+	ArticleId   uint      `json:"article_id" gorm:"column:user_item_id"`
+	FeedId      uint      `json:"feed_id"`
+	Language    string    `json:"language"`
+	Stared      bool      `json:"is_stared"`
+	Link        string    `json:"link"`
+	Title       string    `json:"title"`
+	Content     string    `json:"content"`
+	PublishedAt time.Time `json:"date_add"`
+	Tags        []uint    `json:"tags"`
 }
 
 type TagItemSync struct {
@@ -65,7 +65,7 @@ func AddTagItemsListContent(tagItems []TagItemList, tagItemsContent []TagItemLis
 
 func (item TagItemList) HasTag(tagId uint) bool {
 	for _, tag := range item.Tags {
-		if (tag  == tagId) {
+		if (tag == tagId) {
 			return true
 		}
 	}

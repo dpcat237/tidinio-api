@@ -4,7 +4,6 @@ import (
 	"github.com/tidinio/src/core/item/model"
 	"github.com/tidinio/src/core/component/repository"
 	"fmt"
-	"time"
 )
 
 const userItemTable = item_model.UserItemTable
@@ -37,7 +36,7 @@ limit int) []item_model.UserItem {
 			"and " + userItemTable + ".shared = ? and " + userItemTable + ".unread = ? " +
 			"and " + userItemTable + ".user_id = ? AND " + userItemTable + ".id NOT IN(?) " +
 			"left join " + ufTb + " on " + iTb + ".feed_id=" + ufTb + ".feed_id " +
-			"and " + userItemTable + ".user_id=" + ufTb + ".user_id and " + ufTb + ".deleted = ?", 0, 1, userId, unreadIds, 0).
+			"and " + userItemTable + ".user_id=" + ufTb + ".user_id", 0, 1, userId, unreadIds).
 		Order("" + userItemTable + ".item_id desc").
 		Offset(offset).
 		Limit(limit).
@@ -53,7 +52,7 @@ func GetUnreadUserItemsContent(repo common_repository.Repository, unreadIds []st
 	repo.DB.
 		Table(userItemTable).
 		Select(userItemTable + ".id article_id, " + fTb + ".id feed_id, " + userItemTable + ".stared, " + fTb +
-			".language, " + iTb + ".link, " + iTb + ".title, " + iTb + ".content, " + iTb + ".created_at").
+			".language, " + iTb + ".link, " + iTb + ".title, " + iTb + ".content, " + iTb + ".created_at, " + iTb + ".published_at").
 		Joins(
 			"inner join " + iTb + " on " + userItemTable + ".item_id = " + iTb + ".id " +
 			"and " + userItemTable + ".id IN(?) " +
@@ -80,12 +79,11 @@ func SaveUserItem(repo common_repository.Repository, userItem *item_model.UserIt
 
 func SyncReadItems(repo common_repository.Repository, items []item_model.UserItem) {
 	tx := repo.DB.Begin()
-	now := time.Now().Format("2006-01-02 15:04:05")
 
 	for _, item := range items {
 		query := fmt.Sprintf(
 			"UPDATE user_item SET stared='%d', unread='%d', updated_at='%s' WHERE id='%d';",
-			item.Stared, item.Unread, now, item.ID)
+			item.Stared, item.Unread, common_repository.GetDateNow(), item.ID)
 		tx.Exec(query)
 	}
 	tx.Commit()
@@ -93,12 +91,11 @@ func SyncReadItems(repo common_repository.Repository, items []item_model.UserIte
 
 func UpdateUserItemsStaredStatus(repo common_repository.Repository, items []item_model.TagItemList)  {
 	tx := repo.DB.Begin()
-	now := time.Now().Format("2006-01-02 15:04:05")
 
 	for _, item := range items {
 		query := fmt.Sprintf(
 			"UPDATE user_item SET stared='%d', updated_at='%s' WHERE id='%d';",
-			common_repository.BoolToInt(item.Stared), now, item.ArticleId)
+			common_repository.BoolToInt(item.Stared), common_repository.GetDateNow(), item.ArticleId)
 		tx.Exec(query)
 	}
 	tx.Commit()

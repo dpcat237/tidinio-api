@@ -7,14 +7,14 @@ import (
 	"time"
 )
 
-func addHistory(repo common_repository.Repository, feedId uint) {
+func addHistory(repo app_repository.Repository, feedId uint) {
 	feedHistory := feed_model.FeedHistory{}
 	feedHistory.FeedId = feedId
 	feed_repository.SaveFeedHistory(repo, &feedHistory)
 }
 
 func updateHistoryDataChanged(feedId uint) {
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	feedHistory := feed_repository.GetLastHistory(repo, feedId)
 	if (feedHistory.ID > 0) {
 		feedHistory.SetFinished()
@@ -24,7 +24,7 @@ func updateHistoryDataChanged(feedId uint) {
 }
 
 func updateHistorySameData(feedId uint) {
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	feedHistory := feed_repository.GetLastHistory(repo, feedId)
 	if (feedHistory.ID < 1) {
 		addHistory(repo, feedId)

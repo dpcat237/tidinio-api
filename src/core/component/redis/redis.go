@@ -1,4 +1,4 @@
-package common_redis
+package app_redis
 
 import "github.com/go-redis/redis"
 

@@ -1,4 +1,4 @@
-package common_repository
+package app_repository
 
 import (
 	"github.com/jinzhu/gorm"

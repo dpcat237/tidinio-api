@@ -24,7 +24,7 @@ func SyncItems(userId uint, collection []item_model.UserItemSync, limit int) []i
 }
 
 func AddLastItemsNewUser(userId uint, feedId uint, quantity int) {
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	items := item_repository.GetLastItems(repo, feedId, quantity)
 	for _, item := range items {
 		userItem := item_repository.GetUserItemByItemUserId(repo, item.ID, userId)
@@ -48,7 +48,7 @@ func addReadItems(userItems []item_model.UserItemSync, unreadUserItems []item_mo
 	return userItems
 }
 
-func createUserItem(repo common_repository.Repository, userId uint, itemId uint) item_model.UserItem {
+func createUserItem(repo app_repository.Repository, userId uint, itemId uint) item_model.UserItem {
 	userItem := item_model.UserItem{}
 	userItem.UserId = userId
 	userItem.ItemId = itemId
@@ -71,7 +71,7 @@ func filterUnread(items []item_model.UserItem, unread bool) []item_model.UserIte
 
 func getUnreadItems(userId uint, collection []item_model.UserItem, limit int) []item_model.UserItemSync {
 	userItems := []item_model.UserItemSync{}
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	unreadIds := collection_helper.GetIdsFromUserItemCollectionStr(collection)
 	totalUnread := item_repository.CountUnreadByUser(repo, userId)
 	unreadUserItems := getUnreadItemsRecursive(userId, unreadIds, 0, limit, totalUnread, repo)
@@ -91,7 +91,7 @@ func getUnreadItems(userId uint, collection []item_model.UserItem, limit int) []
 	return userItems
 }
 
-func getUnreadItemsRecursive(userId uint, unreadIds []string, offset int, limit int, totalUnread int, repo common_repository.Repository) []item_model.UserItem {
+func getUnreadItemsRecursive(userId uint, unreadIds []string, offset int, limit int, totalUnread int, repo app_repository.Repository) []item_model.UserItem {
 	unreadItems := item_repository.GetUnreadUserItems(repo, userId, unreadIds, offset, limit)
 	unreadCount := len(unreadItems)
 
@@ -124,7 +124,7 @@ func mergeUserItemData(items []item_model.Item, userItems []item_model.UserItem)
 }
 
 func syncReadItems(items []item_model.UserItem) {
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	item_repository.SyncReadItems(repo, items)
 	item_repository.Close(repo)
 }

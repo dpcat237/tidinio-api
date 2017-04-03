@@ -14,5 +14,5 @@ func CreateBasicUser() {
 }
 
 func GetUserByDeviceId(deviceId string) user_model.UserBasic {
-	return user_repository.GetUserByDeviceKey(common_repository.InitConnection(), deviceId)
+	return user_repository.GetUserByDeviceKey(app_repository.InitConnection(), deviceId)
 }

@@ -24,7 +24,7 @@ func GetUnreadTagItems(unreadTagItemsIds []uint, tagsIds []uint, limit int) []it
 
 	tagsIdsStr := collection_helper.ConvertIntToStringSlice(tagsIds)
 	unreadTagItemsIdsStr := collection_helper.ConvertIntToStringSlice(unreadTagItemsIds)
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 
 	totalUnread := item_repository.TotalUnreadTagItems(repo, tagsIdsStr)
 	tagItemsList := getUnreadTagItemsRecursive(repo, tagsIdsStr, unreadTagItemsIdsStr, 0, limit + 5, totalUnread)
@@ -46,12 +46,12 @@ func SyncTagItems(apiTagItems []item_model.TagItemList) []item_model.TagItemSync
 	updateLocalTagItems(apiTagItems)
 	//TODO: executeCrawling
 	userItemIds := collection_helper.GetUserItemIdsFromTagItemListCollectionStr(apiTagItems)
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 
 	return item_transformer.ToTagItemSync(item_repository.GetUnreadTagItemsSync(repo, userItemIds))
 }
 
-func addItemsTagsRelation(repo common_repository.Repository, collection []item_model.TagItem) {
+func addItemsTagsRelation(repo app_repository.Repository, collection []item_model.TagItem) {
 	relatedTags := item_repository.GetTagsByUserItemIds(repo, collection_helper.GetUserItemIdsFromTagItemCollectionStr(collection), 0)
 	if (len(relatedTags) < 1) {
 		item_repository.CreateTagItems(repo, tagItemsAdd)
@@ -76,7 +76,7 @@ func addItemsTagsRelation(repo common_repository.Repository, collection []item_m
 }
 
 func addSharedItem(userId uint, tagId uint, title string, link string) {
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	item := item_repository.GetItemByLink(repo, link)
 	if (item.ID == 0) {
 		createSharedItem(userId, tagId, title, link)
@@ -136,7 +136,7 @@ func createSharedItem(userId uint, tagId uint, title string, link string) {
 	item.Title = title
 	item.Link = link
 
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	item = item_repository.SaveSharedItem(repo, item)
 	userItem := createUserItem(repo, userId, item.ID)
 	createTagItem(userItem.ID, tagId)
@@ -149,12 +149,12 @@ func createTagItem(userItemId uint, tagId uint) {
 	tagItem.UserItemId = userItemId
 	tagItem.Unread = 1
 
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	item_repository.SaveTagItem(repo, &tagItem)
 }
 
 func getUnreadTagItemsRecursive(
-repo common_repository.Repository,
+repo app_repository.Repository,
 tagsIds []string,
 unreadTagItemsIds []string,
 offset int,
@@ -183,7 +183,7 @@ totalUnread int) []item_model.TagItemList {
 func updateLocalTagItems(tagItems []item_model.TagItemList) {
 	tagItemsAdd = []item_model.TagItem{}
 	tagItemsRemove = make(map[uint][]uint)
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 
 	apiItems := collection_helper.MoveTagItemsListUnderUserItemId(tagItems)
 	item_repository.UpdateUserItemsStaredStatus(repo, tagItems)

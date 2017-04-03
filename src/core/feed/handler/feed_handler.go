@@ -21,7 +21,7 @@ func AddFeed(userId uint, feedUrl string) (feed_model.Feed, error) {
 		return feed, feedError
 	}
 
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	feed = feed_repository.GetFeedByUrl(repo, feedUrl)
 	if (feed.ID > 0) {
 		userFeed := feed_repository.GetUserFeedByFeedAndUser(repo, feed.ID, userId)
@@ -45,7 +45,7 @@ func AddFeed(userId uint, feedUrl string) (feed_model.Feed, error) {
 	return feed, feedError
 }
 
-func createFeed(repo common_repository.Repository, feedUrl string) (feed_model.Feed, error) {
+func createFeed(repo app_repository.Repository, feedUrl string) (feed_model.Feed, error) {
 	feed := feed_model.Feed{}
 	fp := gofeed.NewParser()
 	feedData, feedError := fp.ParseURL(feedUrl)
@@ -86,7 +86,7 @@ func updateFeedData(feed feed_model.Feed) {
 		return
 	}
 
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	count := 0
 	for _, item := range feedData.Items {
 		isNew := item_handler.CreateUpdateItem(repo, item, feed.ID)

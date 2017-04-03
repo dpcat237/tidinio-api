@@ -10,8 +10,8 @@ func FromUserItemsSync(items []item_model.UserItemSync) []item_model.UserItem {
 	for _, item := range items {
 		uItem := item_model.UserItem{}
 		uItem.ID = item.ID
-		uItem.Unread = common_repository.BoolToInt(item.Unread)
-		uItem.Stared = common_repository.BoolToInt(item.Stared)
+		uItem.Unread = app_repository.BoolToInt(item.Unread)
+		uItem.Stared = app_repository.BoolToInt(item.Stared)
 		result = append(result, uItem)
 	}
 

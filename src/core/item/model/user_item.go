@@ -54,8 +54,8 @@ func MergeToUserItemSync(item Item, userItem UserItem) UserItemSync {
 	result.Title = item.Title
 	result.Link = item.Link
 	result.Content = item.Content
-	result.Stared = common_repository.IntToBool(userItem.Stared)
-	result.Unread = common_repository.IntToBool(userItem.Unread)
+	result.Stared = app_repository.IntToBool(userItem.Stared)
+	result.Unread = app_repository.IntToBool(userItem.Unread)
 	result.PublishedAt = item.PublishedAt
 
 	return result

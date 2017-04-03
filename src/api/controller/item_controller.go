@@ -28,47 +28,47 @@ type syncTagItems struct {
 
 func AddSharedItem(w http.ResponseWriter, r *http.Request) {
 	data := sharedItems{}
-	user, err := common_controller.GetAuthContent(w, r, &data)
+	user, err := app_controller.GetAuthContent(w, r, &data)
 	if err != nil {
 		return
 	}
 	if (len(data.Articles) < 1) {
-		common_controller.ReturnPreconditionFailed(w, "No articles")
+		app_controller.ReturnPreconditionFailed(w, "No articles")
 	}
 
 	item_handler.AddSharedItems(user.ID, data.Articles)
-	common_controller.ReturnNoContent(w)
+	app_controller.ReturnNoContent(w)
 }
 
 func ListTagItems(w http.ResponseWriter, r *http.Request) {
 	data := listTagItems{}
-	_, err := common_controller.GetAuthContent(w, r, &data)
+	_, err := app_controller.GetAuthContent(w, r, &data)
 	if err != nil {
 		return
 	}
 
 	items := item_handler.GetUnreadTagItems(data.SavedArticles, data.ReturnTags, data.Limit)
-	common_controller.ReturnJson(w, items)
+	app_controller.ReturnJson(w, items)
 }
 
 func SyncItems(w http.ResponseWriter, r *http.Request) {
 	data := syncItems{}
-	user, err := common_controller.GetAuthContent(w, r, &data)
+	user, err := app_controller.GetAuthContent(w, r, &data)
 	if err != nil {
 		return
 	}
 
 	items := item_handler.SyncItems(user.ID, data.Articles, data.Limit)
-	common_controller.ReturnJson(w, items)
+	app_controller.ReturnJson(w, items)
 }
 
 func SyncTagItems(w http.ResponseWriter, r *http.Request) {
 	data := syncTagItems{}
-	_, err := common_controller.GetAuthContent(w, r, &data)
+	_, err := app_controller.GetAuthContent(w, r, &data)
 	if err != nil {
 		return
 	}
 
 	items := item_handler.SyncTagItems(data.SavedArticles)
-	common_controller.ReturnJson(w, items)
+	app_controller.ReturnJson(w, items)
 }

@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func CreateUpdateItem(repo common_repository.Repository, itemData *gofeed.Item, feedId uint) bool {
+func CreateUpdateItem(repo app_repository.Repository, itemData *gofeed.Item, feedId uint) bool {
 	item := item_repository.GetItemByLink(repo, itemData.Link)
 	currentContentHash := string_helper.GetHashFromString(itemData.Content)
 	if (item.ID < 1) {

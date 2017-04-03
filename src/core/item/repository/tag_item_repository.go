@@ -9,7 +9,7 @@ import (
 
 const tagItemTable  = item_model.TagItemTable
 
-func CreateTagItems(repo common_repository.Repository, collection []item_model.TagItem) {
+func CreateTagItems(repo app_repository.Repository, collection []item_model.TagItem) {
 	tx := repo.DB.Begin()
 	for _, tagItem := range collection {
 		tx.Create(&tagItem)
@@ -17,14 +17,14 @@ func CreateTagItems(repo common_repository.Repository, collection []item_model.T
 	tx.Commit()
 }
 
-func GetTagItemByUserItemTagId(repo common_repository.Repository, userItemId uint, tagId uint) item_model.TagItem {
+func GetTagItemByUserItemTagId(repo app_repository.Repository, userItemId uint, tagId uint) item_model.TagItem {
 	tagItem := item_model.TagItem{}
 	repo.DB.Where("user_item_id = ? AND later_id = ?", userItemId, tagId).First(&tagItem)
 
 	return tagItem
 }
 
-func GetTagsByUserItemIds(repo common_repository.Repository, userItemIds []string, unread int) []item_model.TagItem {
+func GetTagsByUserItemIds(repo app_repository.Repository, userItemIds []string, unread int) []item_model.TagItem {
 	results := []item_model.TagItem{}
 	repo.DB.
 		Table(tagItemTable).
@@ -36,7 +36,7 @@ func GetTagsByUserItemIds(repo common_repository.Repository, userItemIds []strin
 }
 
 func GetUnreadTagItems(
-repo common_repository.Repository,
+repo app_repository.Repository,
 tagsIds []string,
 tagItemsIds []string,
 offset int,
@@ -53,7 +53,7 @@ limit int) []item_model.TagItem {
 	return results
 }
 
-func GetUnreadTagItemsSync(repo common_repository.Repository, userItemIds []string) []item_model.TagItemSyncDB {
+func GetUnreadTagItemsSync(repo app_repository.Repository, userItemIds []string) []item_model.TagItemSyncDB {
 	results := []item_model.TagItemSyncDB{}
 	repo.DB.
 		Table(tagItemTable).
@@ -67,7 +67,7 @@ func GetUnreadTagItemsSync(repo common_repository.Repository, userItemIds []stri
 	return results
 }
 
-func MarkAsUnread(repo common_repository.Repository, collection map[uint][]uint, unread int) {
+func MarkAsUnread(repo app_repository.Repository, collection map[uint][]uint, unread int) {
 	tx := repo.DB.Begin()
 	now := time.Now().Format("2006-01-02 15:04:05")
 
@@ -82,7 +82,7 @@ func MarkAsUnread(repo common_repository.Repository, collection map[uint][]uint,
 	tx.Commit()
 }
 
-func SaveTagItem(repo common_repository.Repository, tagItem *item_model.TagItem) {
+func SaveTagItem(repo app_repository.Repository, tagItem *item_model.TagItem) {
 	if (repo.DB.NewRecord(tagItem)) {
 		repo.DB.Create(&tagItem)
 	} else {
@@ -90,7 +90,7 @@ func SaveTagItem(repo common_repository.Repository, tagItem *item_model.TagItem)
 	}
 }
 
-func TotalUnreadTagItems(repo common_repository.Repository, tagsIds []string) int {
+func TotalUnreadTagItems(repo app_repository.Repository, tagsIds []string) int {
 	count := 0
 	repo.DB.Table(tagItemTable).Select("id").Where("unread = ? AND later_id IN(?)", 1, tagsIds).Count(&count)
 

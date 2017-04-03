@@ -1,4 +1,4 @@
-package common_controller
+package app_controller
 
 import (
 	"io/ioutil"

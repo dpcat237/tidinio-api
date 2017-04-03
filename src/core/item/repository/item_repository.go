@@ -8,14 +8,14 @@ import (
 
 const itemTable  = item_model.ItemTable
 
-func GetItemByLink(repo common_repository.Repository, link string) item_model.Item {
+func GetItemByLink(repo app_repository.Repository, link string) item_model.Item {
 	item := item_model.Item{}
 	repo.DB.Where("link = ?", link).First(&item)
 
 	return item
 }
 
-func GetItemsByIds(repo common_repository.Repository, ids []string) []item_model.Item {
+func GetItemsByIds(repo app_repository.Repository, ids []string) []item_model.Item {
 	items := []item_model.Item{}
 	repo.DB.
 		Table(itemTable).
@@ -26,14 +26,14 @@ func GetItemsByIds(repo common_repository.Repository, ids []string) []item_model
 	return items
 }
 
-func GetLastItems(repo common_repository.Repository, feedId uint, limit int) []item_model.Item {
+func GetLastItems(repo app_repository.Repository, feedId uint, limit int) []item_model.Item {
 	items := []item_model.Item{}
 	repo.DB.Table(itemTable).Where("feed_id = ?", feedId).Limit(limit).Scan(&items)
 
 	return items
 }
 
-func GetReadItems(repo common_repository.Repository, userId uint, unreadIds []string) []item_model.Item {
+func GetReadItems(repo app_repository.Repository, userId uint, unreadIds []string) []item_model.Item {
 	results := []item_model.Item{}
 	repo.DB.
 		Table(itemTable).
@@ -47,7 +47,7 @@ func GetReadItems(repo common_repository.Repository, userId uint, unreadIds []st
 	return results
 }
 
-func SaveItem(repo common_repository.Repository, item *item_model.Item) {
+func SaveItem(repo app_repository.Repository, item *item_model.Item) {
 	if (repo.DB.NewRecord(item)) {
 		repo.DB.Create(&item)
 	} else {
@@ -55,7 +55,7 @@ func SaveItem(repo common_repository.Repository, item *item_model.Item) {
 	}
 }
 
-func SaveSharedItem(repo common_repository.Repository, item item_model.Item) item_model.Item {
+func SaveSharedItem(repo app_repository.Repository, item item_model.Item) item_model.Item {
 	query := fmt.Sprintf(
 		"INSERT INTO " + itemTable + " (title, link) VALUES('%s', '%s');",
 		item.Title, item.Link)

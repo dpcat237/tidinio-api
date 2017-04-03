@@ -7,7 +7,7 @@ import (
 )
 
 func SubscribeUserToFeed(userId uint, feed feed_model.Feed) {
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	subscribeNewUser(userId, feed.ID)
 	if (!feed.IsEnabled()) {
 		feed.Enable()
@@ -18,7 +18,7 @@ func SubscribeUserToFeed(userId uint, feed feed_model.Feed) {
 }
 
 func subscribeNewUser(userId uint, feedId uint) {
-	repo := common_repository.InitConnection()
+	repo := app_repository.InitConnection()
 	feed := feed_repository.GetFeedById(repo, feedId)
 	userFeed := feed_model.UserFeed{}
 	userFeed.UserId = userId

@@ -9,6 +9,8 @@ import (
 	"github.com/tidinio/src/core/item/handler"
 	"github.com/tidinio/src/core/feed/redis"
 	"github.com/tidinio/src/core/component/helper/string"
+	"github.com/tidinio/src/core/item/repository"
+	"github.com/tidinio/src/core/component/helper/http"
 )
 
 func AddFeed(userId uint, feedUrl string) (feed_model.Feed, error) {
@@ -31,7 +33,9 @@ func AddFeed(userId uint, feedUrl string) (feed_model.Feed, error) {
 	} else if (feed.ID < 1) {
 		feed, feedError = createFeed(repo, feedUrl)
 		updateFeedData(feed)
-		//TODO: NPSCoreEvents::FEED_CREATED
+		go func() {
+			afterFeedCreated(feed)
+		}()
 	}
 
 	isFeedEnabled := feed.IsEnabled()
@@ -40,9 +44,42 @@ func AddFeed(userId uint, feedUrl string) (feed_model.Feed, error) {
 		updateFeedData(feed)
 	}
 	item_handler.AddLastItemsNewUser(userId, feed.ID, 25)
-	//TODO: NPSCoreEvents::FEED_MODIFIED
+	go func() {
+		afterUserFeedModified(userId)
+	}()
 
 	return feed, feedError
+}
+
+func EditFeedTitle(userId uint, userFeedId uint, feedTitle string) error {
+	repo := app_repository.InitConnection()
+	userFeed := feed_repository.GetUserFeedById(repo, userFeedId)
+	if (userFeed.ID < 1 || userFeed.UserId != userId) {
+		return errors.New("Wrong provided data")
+	}
+
+	if (userFeed.Title == feedTitle) {
+		return nil
+	}
+
+	userFeed.Title = feedTitle
+	feed_repository.SaveUserFeed(repo, &userFeed)
+	go func() {
+		afterUserFeedModified(userId)
+	}()
+
+	return nil
+}
+
+func afterFeedCreated(feed feed_model.Feed) {
+	feed.Language = detectFeedLanguage(feed.ID)
+	crawling := detectFeedNeedCrawling(feed.ID)
+	if (crawling) {
+		feed.Crawling = app_repository.BoolToInt(crawling)
+	}
+
+	repo := app_repository.InitConnection()
+	feed_repository.SaveFeed(repo, &feed)
 }
 
 func createFeed(repo app_repository.Repository, feedUrl string) (feed_model.Feed, error) {
@@ -62,8 +99,39 @@ func createFeed(repo app_repository.Repository, feedUrl string) (feed_model.Feed
 	return feed, nil
 }
 
+func detectFeedLanguage(feedId uint) string {
+	language := ""
+	repo := app_repository.InitConnection()
+	items := item_repository.GetLastItems(repo, feedId, 10)
+	defer repo.Close()
+	for _, item := range items {
+		language = string_helper.DetectLanguageFromHtml(item.Content)
+		if (language != "") {
+			return language
+		}
+	}
+
+	return language
+}
+
+func detectFeedNeedCrawling(feedId uint) bool {
+	needsCrawling := true
+	repo := app_repository.InitConnection()
+	items := item_repository.GetLastItems(repo, feedId, 5)
+	defer repo.Close()
+
+	for _, item := range items {
+		needsCrawling = item_handler.IsItemNeedsCrawling(item)
+		if (needsCrawling) {
+			return needsCrawling
+		}
+	}
+
+	return needsCrawling
+}
+
 func isFeedDataChanged(feed feed_model.Feed) bool {
-	currentHash := string_helper.GetHashFromUrlData(feed.Url)
+	currentHash := http_helper.GetHashFromUrlData(feed.Url)
 	lastHash := feed_redis.GetDataHash(feed.ID)
 	if (currentHash == lastHash) {
 		updateHistorySameData(feed.ID)

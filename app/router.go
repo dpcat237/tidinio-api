@@ -23,6 +23,24 @@ var routes = Routes{
 		"/feed/add",
 		controller.AddFeed,
 	},
+	Route{
+		"Unsubscribe from feed",
+		"DELETE",
+		"/feed/{id}",
+		controller.DeleteFeed,
+	},
+	Route{
+		"Edit feed title",
+		"POST",
+		"/feed/edit",
+		controller.EditFeed,
+	},
+	Route{
+		"Sync feeds",
+		"POST",
+		"/feed/sync",
+		controller.SyncFeeds,
+	},
 	/** Item **/
 	Route{
 		"Add shared article",

@@ -1,12 +1,13 @@
 package item_handler
 
 import (
-	"github.com/tidinio/src/core/component/repository"
+	"time"
 	"github.com/mmcdole/gofeed"
+	"github.com/tidinio/src/core/component/repository"
 	"github.com/tidinio/src/core/component/helper/string"
 	"github.com/tidinio/src/core/item/repository"
 	"github.com/tidinio/src/core/item/model"
-	"time"
+	"github.com/tidinio/src/core/component/helper/http"
 )
 
 func CreateUpdateItem(repo app_repository.Repository, itemData *gofeed.Item, feedId uint) bool {
@@ -30,6 +31,14 @@ func CreateUpdateItem(repo app_repository.Repository, itemData *gofeed.Item, fee
 	}
 
 	return false
+}
+
+func IsItemNeedsCrawling(item item_model.Item) bool {
+	originalLength := string_helper.StringLength(string_helper.StripHtmlContent(item.Content))
+	crawledLength := string_helper.StringLength(string_helper.StripHtmlContent(http_helper.GetContentFromUrl(item.Link)))
+	difference := (crawledLength / originalLength) * 100
+
+	return (difference > 120)
 }
 
 func createItemFromFeed(feedId uint, contentHash string, itemData *gofeed.Item) item_model.Item {

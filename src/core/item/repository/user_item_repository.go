@@ -32,11 +32,11 @@ limit int) []item_model.UserItem {
 		Table(userItemTable).
 		Select(userItemTable + ".id, " + userItemTable + ".stared, " + userItemTable + ".unread, " + userItemTable + ".item_id").
 		Joins(
-		"left join " + iTb + " on " + userItemTable + ".item_id = " + iTb + ".id " +
+		"inner join " + iTb + " on " + userItemTable + ".item_id = " + iTb + ".id " +
 			"and " + userItemTable + ".shared = ? and " + userItemTable + ".unread = ? " +
 			"and " + userItemTable + ".user_id = ? AND " + userItemTable + ".id NOT IN(?) " +
 			"left join " + ufTb + " on " + iTb + ".feed_id=" + ufTb + ".feed_id " +
-			"and " + userItemTable + ".user_id=" + ufTb + ".user_id", 0, 1, userId, unreadIds).
+			"and " + ufTb + ".user_id = ? and " + ufTb + ".deleted_at = ?", 0, 1, userId, unreadIds, userId, nil).
 		Order("" + userItemTable + ".item_id desc").
 		Offset(offset).
 		Limit(limit).
@@ -83,7 +83,7 @@ func SyncReadItems(repo app_repository.Repository, items []item_model.UserItem) 
 	for _, item := range items {
 		query := fmt.Sprintf(
 			"UPDATE user_item SET stared='%d', unread='%d', updated_at='%s' WHERE id='%d';",
-			item.Stared, item.Unread, app_repository.GetDateNow(), item.ID)
+			item.Stared, item.Unread, app_repository.GetDateNowFormatted(), item.ID)
 		tx.Exec(query)
 	}
 	tx.Commit()
@@ -95,7 +95,7 @@ func UpdateUserItemsStaredStatus(repo app_repository.Repository, items []item_mo
 	for _, item := range items {
 		query := fmt.Sprintf(
 			"UPDATE user_item SET stared='%d', updated_at='%s' WHERE id='%d';",
-			app_repository.BoolToInt(item.Stared), app_repository.GetDateNow(), item.ArticleId)
+			app_repository.BoolToInt(item.Stared), app_repository.GetDateNowFormatted(), item.ArticleId)
 		tx.Exec(query)
 	}
 	tx.Commit()

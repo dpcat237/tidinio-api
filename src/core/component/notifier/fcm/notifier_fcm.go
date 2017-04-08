@@ -2,7 +2,6 @@ package app_fcm
 
 import (
 	"github.com/NaySoftware/go-fcm"
-	"github.com/tidinio/src/core/component/logger"
 	"github.com/tidinio/src/core/device/handler"
 )
 
@@ -24,12 +23,12 @@ func RequireToSync(command string, userId uint) {
 	c := fcm.NewFcmClient(serverKey)
 	c.NewFcmRegIdsMsg(devices, data)
 
-	status, err := c.Send()
+	/*status, err := c.Send()
 	if err == nil {
 		status.PrintResults()
 
 		return
 	}
 
-	app_logger.Error(err)
+	app_logger.Error(err)*/
 }

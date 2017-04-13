@@ -12,6 +12,7 @@ import (
 	"github.com/tidinio/src/core/item/repository"
 	"github.com/tidinio/src/core/component/helper/http"
 	"github.com/tidinio/src/core/feed/data_transformer"
+	"github.com/cstockton/go-conv"
 )
 
 func AddFeed(userId uint, feedUrl string) (feed_model.UserFeedSync, error) {
@@ -77,7 +78,7 @@ func afterFeedCreated(feed feed_model.Feed) {
 	feed.Language = detectFeedLanguage(feed.ID)
 	crawling := detectFeedNeedCrawling(feed.ID)
 	if (crawling) {
-		feed.Crawling = app_repository.BoolToInt(crawling)
+		feed.Crawling, _ = conv.Int(crawling)
 	}
 
 	repo := app_repository.InitConnection()

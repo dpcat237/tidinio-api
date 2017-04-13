@@ -3,7 +3,6 @@ package app_repository
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"fmt"
 	"time"
 	"github.com/tidinio/src/core/component/logger"
 )
@@ -17,14 +16,6 @@ const (
 
 type Repository struct {
 	DB *gorm.DB
-}
-
-func BoolToInt(value bool) int {
-	if (value) {
-		return 1
-	}
-
-	return 0
 }
 
 func (repo Repository) Close() {
@@ -52,16 +43,4 @@ func InitConnection() Repository {
 	repo.DB = db
 
 	return repo
-}
-
-func IntToBool(value int) bool {
-	if (value > 0) {
-		return true
-	}
-
-	return false
-}
-
-func UintToString(value uint) string {
-	return fmt.Sprint(value)
 }

@@ -3,7 +3,7 @@ package item_model
 import (
 	"github.com/jinzhu/gorm"
 	"time"
-	"github.com/tidinio/src/core/component/repository"
+	"github.com/cstockton/go-conv"
 )
 
 const UserItemTable = "user_item"
@@ -54,8 +54,8 @@ func MergeToUserItemSync(item Item, userItem UserItem) UserItemSync {
 	result.Title = item.Title
 	result.Link = item.Link
 	result.Content = item.Content
-	result.Stared = app_repository.IntToBool(userItem.Stared)
-	result.Unread = app_repository.IntToBool(userItem.Unread)
+	result.Stared, _ = conv.Bool(userItem.Stared)
+	result.Unread, _ = conv.Bool(userItem.Unread)
 	result.PublishedAt = item.PublishedAt
 
 	return result

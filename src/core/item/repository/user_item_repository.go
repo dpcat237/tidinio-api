@@ -4,6 +4,7 @@ import (
 	"github.com/tidinio/src/core/item/model"
 	"github.com/tidinio/src/core/component/repository"
 	"fmt"
+	"github.com/cstockton/go-conv"
 )
 
 const userItemTable = item_model.UserItemTable
@@ -93,9 +94,10 @@ func UpdateUserItemsStaredStatus(repo app_repository.Repository, items []item_mo
 	tx := repo.DB.Begin()
 
 	for _, item := range items {
+		stared, _ := conv.Int(item.Stared)
 		query := fmt.Sprintf(
 			"UPDATE user_item SET stared='%d', updated_at='%s' WHERE id='%d';",
-			app_repository.BoolToInt(item.Stared), app_repository.GetDateNowFormatted(), item.ArticleId)
+			stared, app_repository.GetDateNowFormatted(), item.ArticleId)
 		tx.Exec(query)
 	}
 	tx.Commit()

@@ -3,7 +3,7 @@ package app
 import (
 	"net/http"
 	"github.com/gorilla/mux"
-	"github.com/tidinio/src/api/controller"
+	"github.com/tidinio/src/controller/api"
 )
 
 type Route struct {
@@ -21,57 +21,57 @@ var routes = Routes{
 		"Add feed, subscribe user to this feed and add last items for user",
 		"POST",
 		"/feed/add",
-		controller.AddFeed,
+		api_controller.AddFeed,
 	},
 	Route{
 		"Unsubscribe from feed",
 		"DELETE",
 		"/feed/{id}",
-		controller.DeleteFeed,
+		api_controller.DeleteFeed,
 	},
 	Route{
 		"Edit feed title",
 		"PATCH",
 		"/feed/{id}",
-		controller.EditFeed,
+		api_controller.EditFeed,
 	},
 	Route{
 		"Sync feeds",
 		"POST",
 		"/feed/sync",
-		controller.SyncFeeds,
+		api_controller.SyncFeeds,
 	},
 	/** Item **/
 	Route{
 		"Add shared article",
 		"POST",
 		"/article/add_shared",
-		controller.AddSharedItem,
+		api_controller.AddSharedItem,
 	},
 	Route{
 		"Sync items",
 		"POST",
 		"/article/sync",
-		controller.SyncItems,
+		api_controller.SyncItems,
 	},
 	Route{
 		"Get saved articles",
 		"POST",
 		"/saved_article/list",
-		controller.ListTagItems,
+		api_controller.ListTagItems,
 	},
 	Route{
 		"Sync saved articles changes",
 		"POST",
 		"/saved_article/sync",
-		controller.SyncTagItems,
+		api_controller.SyncTagItems,
 	},
 	/** User **/
 	Route{
 		"User register",
 		"POST",
 		"/user",
-		controller.UserRegister,
+		api_controller.UserRegister,
 	},
 }
 

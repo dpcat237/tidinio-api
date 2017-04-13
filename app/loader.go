@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/tidinio/src/core/component/configuration"
-	"github.com/tidinio/src/core/component/repository"
+	"github.com/tidinio/src/component/configuration"
+	"github.com/tidinio/src/component/repository"
 )
 
 func InitializeRequiredData() {

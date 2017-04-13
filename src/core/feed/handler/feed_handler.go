@@ -11,24 +11,25 @@ import (
 	"github.com/tidinio/src/core/component/helper/string"
 	"github.com/tidinio/src/core/item/repository"
 	"github.com/tidinio/src/core/component/helper/http"
+	"github.com/tidinio/src/core/feed/data_transformer"
 )
 
-func AddFeed(userId uint, feedUrl string) (feed_model.Feed, error) {
-	feed := feed_model.Feed{}
+func AddFeed(userId uint, feedUrl string) (feed_model.UserFeedSync, error) {
+	userFeedSync := feed_model.UserFeedSync{}
 	if (feedUrl == "") {
-		return feed, errors.New("Empty url")
+		return userFeedSync, errors.New("Empty url")
 	}
 	feedUrl, feedError := string_helper.CleanUrl(feedUrl)
 	if feedError != nil {
-		return feed, feedError
+		return userFeedSync, feedError
 	}
 
 	repo := app_repository.InitConnection()
-	feed = feed_repository.GetFeedByUrl(repo, feedUrl)
+	feed := feed_repository.GetFeedByUrl(repo, feedUrl)
 	if (feed.ID > 0) {
 		userFeed := feed_repository.GetUserFeedByFeedAndUser(repo, feed.ID, userId)
 		if (userFeed.ID > 0) {
-			return feed, nil
+			return feed_transformer.ToUserFeedSync(userFeed), nil
 		}
 	} else if (feed.ID < 1) {
 		feed, feedError = createFeed(repo, feedUrl)
@@ -47,8 +48,9 @@ func AddFeed(userId uint, feedUrl string) (feed_model.Feed, error) {
 	go func() {
 		afterUserFeedModified(userId)
 	}()
+	userFeed := feed_repository.GetUserFeedByFeedAndUser(repo, feed.ID, userId)
 
-	return feed, feedError
+	return feed_transformer.ToUserFeedSync(userFeed), feedError
 }
 
 func EditFeedTitle(userId uint, userFeedId uint, feedTitle string) error {

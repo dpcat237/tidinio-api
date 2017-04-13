@@ -14,12 +14,11 @@ type addFeed struct {
 }
 
 type editFeed struct {
-	FeedId    uint   `json:"feed_id"`
-	FeedTitle string `json:"feed_title"`
+	FeedTitle string `json:"title"`
 }
 
 type syncFeeds struct {
-	Feeds []feed_model.UserFeedSync
+	Feeds []feed_model.UserFeedSync `json:"feeds"`
 }
 
 func AddFeed(w http.ResponseWriter, r *http.Request) {
@@ -29,13 +28,13 @@ func AddFeed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	feed, err := feed_handler.AddFeed(user.ID, data.FeedUrl)
+	userFeed, err := feed_handler.AddFeed(user.ID, data.FeedUrl)
 	if err != nil {
 		app_controller.ReturnPreconditionFailed(w, "Wrong url")
 
 		return
 	}
-	app_controller.ReturnJson(w, feed) //TODO: return FeedSync
+	app_controller.ReturnJson(w, userFeed)
 }
 
 func DeleteFeed(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +56,8 @@ func EditFeed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = feed_handler.EditFeedTitle(user.ID, data.FeedId, data.FeedTitle)
+	vars := mux.Vars(r)
+	err = feed_handler.EditFeedTitle(user.ID, string_helper.StringToUint(vars["id"]), data.FeedTitle)
 	if err != nil {
 		app_controller.ReturnPreconditionFailed(w, err.Error())
 	}

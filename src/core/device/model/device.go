@@ -6,6 +6,7 @@ import (
 )
 
 const DeviceKey  = "device_key"
+const DeviceTable = "device"
 
 type Device struct {
 	gorm.Model
@@ -16,5 +17,5 @@ type Device struct {
 }
 
 func (Device) TableName() string {
-	return "device"
+	return DeviceTable
 }

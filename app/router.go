@@ -31,8 +31,8 @@ var routes = Routes{
 	},
 	Route{
 		"Edit feed title",
-		"POST",
-		"/feed/edit",
+		"PATCH",
+		"/feed/{id}",
 		controller.EditFeed,
 	},
 	Route{

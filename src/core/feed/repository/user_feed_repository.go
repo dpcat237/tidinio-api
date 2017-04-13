@@ -5,6 +5,8 @@ import (
 	"github.com/tidinio/src/core/component/repository"
 )
 
+const userFeedTable  = feed_model.UserFeedTable
+
 func GetUserFeedByFeedAndUser(repo app_repository.Repository, feedId uint, userId uint) feed_model.UserFeed {
 	userFeed := feed_model.UserFeed{}
 	repo.DB.Where("feed_id = ? AND user_id = ?", feedId, userId).First(&userFeed)
@@ -21,7 +23,7 @@ func GetUserFeedById(repo app_repository.Repository, userFeedId uint) feed_model
 
 func GetUserFeedsByUserId(repo app_repository.Repository, userId uint) []feed_model.UserFeed {
 	userFeeds := []feed_model.UserFeed{}
-	repo.DB.Where("user_id = ?", userId).Scan(&userFeeds)
+	repo.DB.Table(userFeedTable).Where("user_id = ?", userId).Scan(&userFeeds)
 
 	return userFeeds
 }

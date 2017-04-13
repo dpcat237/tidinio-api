@@ -9,9 +9,6 @@ import (
 	"github.com/tidinio/src/core/component/notifier/fcm"
 )
 
-var feedsAdd = []feed_model.Feed{}
-var feedsRemove = make(map[uint][]uint)
-
 func SyncUserFeeds(userId uint, userFeedsApi []feed_model.UserFeedSync) []feed_model.UserFeedSync {
 	repo := app_repository.InitConnection()
 	userFeeds := feed_repository.GetUserFeedsByUserId(repo, userId)
@@ -23,12 +20,28 @@ func SyncUserFeeds(userId uint, userFeedsApi []feed_model.UserFeedSync) []feed_m
 		return feed_transformer.ToUserFeedsSync(userFeeds)
 	}
 
-	//modified := false
-	checkUserFeedDifferences(userFeeds, userFeedsApi)
-	//TODO:
+	modified := false
+	for _, userFeed := range userFeeds {
+		for _, userFeedApi := range userFeedsApi {
+			if (userFeed.ID != userFeedApi.ID) {
+				continue
+			}
 
+			if (userFeed.Title != userFeedApi.Title && userFeed.UpdatedAt.Before(userFeedApi.UpdatedAt)) {
+				userFeed.Title = userFeedApi.Title
+				feed_repository.SaveUserFeed(repo, &userFeed)
+				modified = true
+			}
+		}
+	}
 
-	return []feed_model.UserFeedSync{}
+	if (modified) {
+		go func() {
+			afterUserFeedModified(userId)
+		}()
+	}
+
+	return feed_transformer.ToUserFeedsSync(feed_repository.GetUserFeedsByUserId(repo, userId))
 }
 
 func SubscribeUserToFeed(userId uint, feed feed_model.Feed) {
@@ -51,17 +64,15 @@ func UnsubscribeFromFeed(userId uint, userFeedId uint) error {
 
 	userFeed.DeletedAt = app_repository.GetDateNow()
 	feed_repository.SaveUserFeed(repo, &userFeed)
-	go func() { afterUserFeedModified(userId) }()
+	go func() {
+		afterUserFeedModified(userId)
+	}()
 
 	return nil
 }
 
 func afterUserFeedModified(userId uint) {
 	app_fcm.RequireToSync(app_fcm.SyncFeeds, userId)
-}
-
-func checkUserFeedDifferences(userFeed []feed_model.UserFeed, userFeedsSync []feed_model.UserFeedSync) {
-	//TODO:
 }
 
 func subscribeNewUser(userId uint, feedId uint) {

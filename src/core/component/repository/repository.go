@@ -48,7 +48,7 @@ func InitConnection() Repository {
 		app_logger.Error(err.Error())
 	}
 	//db.DB().SetMaxIdleConns(1)
-	//db.LogMode(true)
+	db.LogMode(true)
 	repo.DB = db
 
 	return repo

@@ -5,24 +5,24 @@ import (
 	"github.com/tidinio/src/core/component/repository"
 )
 
-func GetFeedById(repo app_repository.Repository, feedId uint) feed_model.Feed {
+func GetFeedById(feedId uint) feed_model.Feed {
 	feed := feed_model.Feed{}
-	repo.DB.Where("id = ?", feedId).First(&feed)
+	app_repository.Conn.Where("id = ?", feedId).First(&feed)
 
 	return feed
 }
 
-func GetFeedByUrl(repo app_repository.Repository, link string) feed_model.Feed {
+func GetFeedByUrl(link string) feed_model.Feed {
 	feed := feed_model.Feed{}
-	repo.DB.Where("url = ?", link).First(&feed)
+	app_repository.Conn.Where("url = ?", link).First(&feed)
 
 	return feed
 }
 
-func SaveFeed(repo app_repository.Repository, feed *feed_model.Feed) {
-	if (repo.DB.NewRecord(feed)) {
-		repo.DB.Create(&feed)
+func SaveFeed(feed *feed_model.Feed) {
+	if (app_repository.Conn.NewRecord(feed)) {
+		app_repository.Conn.Create(&feed)
 	} else {
-		repo.DB.Save(&feed)
+		app_repository.Conn.Save(&feed)
 	}
 }

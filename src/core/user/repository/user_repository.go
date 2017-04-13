@@ -7,30 +7,30 @@ import (
 	"github.com/tidinio/src/core/component/repository"
 )
 
-func SaveUser(repo app_repository.Repository, user user_model.UserBasic) {
-	if (repo.DB.NewRecord(user)) {
-		repo.DB.Create(&user)
+func SaveUser(user user_model.UserBasic) {
+	if (app_repository.Conn.NewRecord(user)) {
+		app_repository.Conn.Create(&user)
 	} else {
-		repo.DB.Save(&user)
+		app_repository.Conn.Save(&user)
 	}
 }
 
-func GetUserByDeviceKey(repo app_repository.Repository, deviceKey string) user_model.UserBasic {
+func GetUserByDeviceKey(deviceKey string) user_model.UserBasic {
 	user := user_model.UserBasic{}
-	repo.DB.Joins("left join device on device.user_id = user.id").Where("device."+device_model.DeviceKey+" = ?", deviceKey).First(&user)
+	app_repository.Conn.Joins("left join device on device.user_id = user.id").Where("device."+device_model.DeviceKey+" = ?", deviceKey).First(&user)
 
 	return user
 }
 
-func GetUserByID(repo app_repository.Repository, id int) user_model.UserBasic {
+func GetUserByID(id int) user_model.UserBasic {
 	user := user_model.UserBasic{}
-	repo.DB.Where("id = ?", id).First(&user)
+	app_repository.Conn.Where("id = ?", id).First(&user)
 
 	return user
 }
 
-func GetUsers(repo app_repository.Repository) (*sql.Rows) {
-	rows, _ := repo.DB.Table("user").Rows()
+func GetUsers() (*sql.Rows) {
+	rows, _ := app_repository.Conn.Table("user").Rows()
 
 	return rows
 }

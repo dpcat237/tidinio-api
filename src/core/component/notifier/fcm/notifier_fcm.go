@@ -3,10 +3,10 @@ package app_fcm
 import (
 	"github.com/NaySoftware/go-fcm"
 	"github.com/tidinio/src/core/device/handler"
+	"github.com/tidinio/src/core/component/configuration"
 )
 
 const (
-	serverKey = "AAAACFnF9nM:APA91bHWPqMubkkZVCxwh17rk-zV7L4NtNE7xwXleh41nXlzv-myuOh8eZ9i88pHObNo39CVgfmPE1sC1yciih_Np_lXNKnVXZsuQ6heEx_DmRhIvHe6-T-eSVrOsynnOHDa0awN_N5I"
 	SyncFeeds = "sync_feeds"
 )
 
@@ -20,6 +20,7 @@ func RequireToSync(command string, userId uint) {
 		"msg": "sync_required",
 		"sum": command,
 	}
+	serverKey, _ := app_conf.Data.String("fcm.serverKey")
 	c := fcm.NewFcmClient(serverKey)
 	c.NewFcmRegIdsMsg(devices, data)
 

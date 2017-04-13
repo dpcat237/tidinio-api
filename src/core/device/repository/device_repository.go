@@ -7,9 +7,9 @@ import (
 
 const DeviceTable  = device_model.DeviceTable
 
-func GetDevicesByUserId(repo app_repository.Repository, userId uint) []device_model.Device {
+func GetDevicesByUserId(userId uint) []device_model.Device {
 	devices := []device_model.Device{}
-	repo.DB.Table(DeviceTable).Where("user_id = ?", userId).Scan(&devices)
+	app_repository.Conn.Table(DeviceTable).Where("user_id = ?", userId).Scan(&devices)
 
 	return devices
 }

@@ -10,8 +10,7 @@ import (
 )
 
 func SyncUserFeeds(userId uint, userFeedsApi []feed_model.UserFeedSync) []feed_model.UserFeedSync {
-	repo := app_repository.InitConnection()
-	userFeeds := feed_repository.GetUserFeedsByUserId(repo, userId)
+	userFeeds := feed_repository.GetUserFeedsByUserId(userId)
 	if len(userFeeds) < 1 {
 		return []feed_model.UserFeedSync{}
 	}
@@ -29,7 +28,7 @@ func SyncUserFeeds(userId uint, userFeedsApi []feed_model.UserFeedSync) []feed_m
 
 			if (userFeed.Title != userFeedApi.Title && userFeed.UpdatedAt.Before(userFeedApi.UpdatedAt)) {
 				userFeed.Title = userFeedApi.Title
-				feed_repository.SaveUserFeed(repo, &userFeed)
+				feed_repository.SaveUserFeed(&userFeed)
 				modified = true
 			}
 		}
@@ -41,29 +40,25 @@ func SyncUserFeeds(userId uint, userFeedsApi []feed_model.UserFeedSync) []feed_m
 		}()
 	}
 
-	return feed_transformer.ToUserFeedsSync(feed_repository.GetUserFeedsByUserId(repo, userId))
+	return feed_transformer.ToUserFeedsSync(feed_repository.GetUserFeedsByUserId(userId))
 }
 
 func SubscribeUserToFeed(userId uint, feed feed_model.Feed) {
-	repo := app_repository.InitConnection()
 	subscribeNewUser(userId, feed.ID)
 	if (!feed.IsEnabled()) {
 		feed.Enable()
-		feed_repository.SaveFeed(repo, &feed)
+		feed_repository.SaveFeed(&feed)
 	}
-
-	defer repo.Close()
 }
 
 func UnsubscribeFromFeed(userId uint, userFeedId uint) error {
-	repo := app_repository.InitConnection()
-	userFeed := feed_repository.GetUserFeedById(repo, userFeedId)
+	userFeed := feed_repository.GetUserFeedById(userFeedId)
 	if (userFeed.ID < 1 || userFeed.UserId != userId) {
 		return errors.New("Wrong provided data")
 	}
 
 	userFeed.DeletedAt = app_repository.GetDateNow()
-	feed_repository.SaveUserFeed(repo, &userFeed)
+	feed_repository.SaveUserFeed(&userFeed)
 	go func() {
 		afterUserFeedModified(userId)
 	}()
@@ -76,11 +71,10 @@ func afterUserFeedModified(userId uint) {
 }
 
 func subscribeNewUser(userId uint, feedId uint) {
-	repo := app_repository.InitConnection()
-	feed := feed_repository.GetFeedById(repo, feedId)
+	feed := feed_repository.GetFeedById(feedId)
 	userFeed := feed_model.UserFeed{}
 	userFeed.UserId = userId
 	userFeed.FeedId = feedId
 	userFeed.Title = feed.Title
-	feed_repository.SaveUserFeed(repo, &userFeed)
+	feed_repository.SaveUserFeed(&userFeed)
 }

@@ -9,19 +9,14 @@ import (
 
 const userItemTable = item_model.UserItemTable
 
-func CountUnreadByUser(repo app_repository.Repository, userId uint) int {
+func CountUnreadByUser(userId uint) int {
 	count := 0
-	repo.DB.Table(userItemTable).Select("count(id)").Where("shared = ? AND unread = ? AND user_id = ?", 0, 1, userId).Count(&count)
+	app_repository.Conn.Table(userItemTable).Select("count(id)").Where("shared = ? AND unread = ? AND user_id = ?", 0, 1, userId).Count(&count)
 
 	return count
 }
 
-func Close(repo app_repository.Repository) {
-	repo.DB.Close()
-}
-
 func GetUnreadUserItems(
-repo app_repository.Repository,
 userId uint,
 unreadIds []string,
 offset int,
@@ -29,7 +24,7 @@ limit int) []item_model.UserItem {
 	results := []item_model.UserItem{}
 	iTb := "item"
 	ufTb := "user_feed"
-	repo.DB.
+	app_repository.Conn.
 		Table(userItemTable).
 		Select(userItemTable + ".id, " + userItemTable + ".stared, " + userItemTable + ".unread, " + userItemTable + ".item_id").
 		Joins(
@@ -46,16 +41,16 @@ limit int) []item_model.UserItem {
 	return results
 }
 
-func GetUnreadUserItemsContent(repo app_repository.Repository, unreadIds []string) []item_model.TagItemList {
+func GetUnreadUserItemsContent(unreadIds []string) []item_model.TagItemList {
 	results := []item_model.TagItemList{}
 	iTb := "item"
 	fTb := "feed"
-	repo.DB.
+	app_repository.Conn.
 		Table(userItemTable).
 		Select(userItemTable + ".id article_id, " + fTb + ".id feed_id, " + userItemTable + ".stared, " + fTb +
-			".language, " + iTb + ".link, " + iTb + ".title, " + iTb + ".content, " + iTb + ".created_at, " + iTb + ".published_at").
+		".language, " + iTb + ".link, " + iTb + ".title, " + iTb + ".content, " + iTb + ".created_at, " + iTb + ".published_at").
 		Joins(
-			"inner join " + iTb + " on " + userItemTable + ".item_id = " + iTb + ".id " +
+		"inner join " + iTb + " on " + userItemTable + ".item_id = " + iTb + ".id " +
 			"and " + userItemTable + ".id IN(?) " +
 			"left join " + fTb + " on " + iTb + ".feed_id=" + fTb + ".id ", unreadIds).
 		Scan(&results)
@@ -63,23 +58,23 @@ func GetUnreadUserItemsContent(repo app_repository.Repository, unreadIds []strin
 	return results
 }
 
-func GetUserItemByItemUserId(repo app_repository.Repository, itemId uint, userId uint) item_model.UserItem {
+func GetUserItemByItemUserId(itemId uint, userId uint) item_model.UserItem {
 	userItem := item_model.UserItem{}
-	repo.DB.Where("item_id = ? AND user_id = ?", itemId, userId).First(&userItem)
+	app_repository.Conn.Where("item_id = ? AND user_id = ?", itemId, userId).First(&userItem)
 
 	return userItem
 }
 
-func SaveUserItem(repo app_repository.Repository, userItem *item_model.UserItem) {
-	if (repo.DB.NewRecord(userItem)) {
-		repo.DB.Create(&userItem)
+func SaveUserItem(userItem *item_model.UserItem) {
+	if (app_repository.Conn.NewRecord(userItem)) {
+		app_repository.Conn.Create(&userItem)
 	} else {
-		repo.DB.Save(&userItem)
+		app_repository.Conn.Save(&userItem)
 	}
 }
 
-func SyncReadItems(repo app_repository.Repository, items []item_model.UserItem) {
-	tx := repo.DB.Begin()
+func SyncReadItems(items []item_model.UserItem) {
+	tx := app_repository.Conn.Begin()
 
 	for _, item := range items {
 		query := fmt.Sprintf(
@@ -90,8 +85,8 @@ func SyncReadItems(repo app_repository.Repository, items []item_model.UserItem) 
 	tx.Commit()
 }
 
-func UpdateUserItemsStaredStatus(repo app_repository.Repository, items []item_model.TagItemList)  {
-	tx := repo.DB.Begin()
+func UpdateUserItemsStaredStatus(items []item_model.TagItemList) {
+	tx := app_repository.Conn.Begin()
 
 	for _, item := range items {
 		stared, _ := conv.Int(item.Stared)

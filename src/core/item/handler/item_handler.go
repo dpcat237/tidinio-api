@@ -3,19 +3,18 @@ package item_handler
 import (
 	"time"
 	"github.com/mmcdole/gofeed"
-	"github.com/tidinio/src/core/component/repository"
 	"github.com/tidinio/src/core/component/helper/string"
 	"github.com/tidinio/src/core/item/repository"
 	"github.com/tidinio/src/core/item/model"
 	"github.com/tidinio/src/core/component/helper/http"
 )
 
-func CreateUpdateItem(repo app_repository.Repository, itemData *gofeed.Item, feedId uint) bool {
-	item := item_repository.GetItemByLink(repo, itemData.Link)
+func CreateUpdateItem(itemData *gofeed.Item, feedId uint) bool {
+	item := item_repository.GetItemByLink(itemData.Link)
 	currentContentHash := string_helper.GetHashFromString(itemData.Content)
 	if (item.ID < 1) {
 		item = createItemFromFeed(feedId, currentContentHash, itemData)
-		item_repository.SaveItem(repo, &item)
+		item_repository.SaveItem(&item)
 
 		return true
 	}
@@ -27,7 +26,7 @@ func CreateUpdateItem(repo app_repository.Repository, itemData *gofeed.Item, fee
 		if (item.CreatedAt.Before(updatedDate)) {
 			item.CreatedAt = updatedDate
 		}
-		item_repository.SaveItem(repo, &item)
+		item_repository.SaveItem(&item)
 	}
 
 	return false

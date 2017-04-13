@@ -7,31 +7,31 @@ import (
 
 const userFeedTable  = feed_model.UserFeedTable
 
-func GetUserFeedByFeedAndUser(repo app_repository.Repository, feedId uint, userId uint) feed_model.UserFeed {
+func GetUserFeedByFeedAndUser(feedId uint, userId uint) feed_model.UserFeed {
 	userFeed := feed_model.UserFeed{}
-	repo.DB.Where("feed_id = ? AND user_id = ?", feedId, userId).First(&userFeed)
+	app_repository.Conn.Where("feed_id = ? AND user_id = ?", feedId, userId).First(&userFeed)
 
 	return userFeed
 }
 
-func GetUserFeedById(repo app_repository.Repository, userFeedId uint) feed_model.UserFeed {
+func GetUserFeedById(userFeedId uint) feed_model.UserFeed {
 	userFeed := feed_model.UserFeed{}
-	repo.DB.Where("id = ?", userFeedId).First(&userFeed)
+	app_repository.Conn.Where("id = ?", userFeedId).First(&userFeed)
 
 	return userFeed
 }
 
-func GetUserFeedsByUserId(repo app_repository.Repository, userId uint) []feed_model.UserFeed {
+func GetUserFeedsByUserId(userId uint) []feed_model.UserFeed {
 	userFeeds := []feed_model.UserFeed{}
-	repo.DB.Table(userFeedTable).Where("user_id = ?", userId).Scan(&userFeeds)
+	app_repository.Conn.Table(userFeedTable).Where("user_id = ?", userId).Scan(&userFeeds)
 
 	return userFeeds
 }
 
-func SaveUserFeed(repo app_repository.Repository, userFeed *feed_model.UserFeed) {
-	if (repo.DB.NewRecord(userFeed)) {
-		repo.DB.Create(&userFeed)
+func SaveUserFeed(userFeed *feed_model.UserFeed) {
+	if (app_repository.Conn.NewRecord(userFeed)) {
+		app_repository.Conn.Create(&userFeed)
 	} else {
-		repo.DB.Save(&userFeed)
+		app_repository.Conn.Save(&userFeed)
 	}
 }

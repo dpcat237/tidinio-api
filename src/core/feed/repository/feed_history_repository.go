@@ -5,17 +5,17 @@ import (
 	"github.com/tidinio/src/core/component/repository"
 )
 
-func GetLastHistory(repo app_repository.Repository, feedId uint) feed_model.FeedHistory {
+func GetLastHistory(feedId uint) feed_model.FeedHistory {
 	feedHistory := feed_model.FeedHistory{}
-	repo.DB.Where("feed_id = ?", feedId).First(&feedHistory)
+	app_repository.Conn.Where("feed_id = ?", feedId).First(&feedHistory)
 
 	return feedHistory
 }
 
-func SaveFeedHistory(repo app_repository.Repository, feedHistory *feed_model.FeedHistory) {
-	if (repo.DB.NewRecord(feedHistory)) {
-		repo.DB.Create(&feedHistory)
+func SaveFeedHistory(feedHistory *feed_model.FeedHistory) {
+	if (app_repository.Conn.NewRecord(feedHistory)) {
+		app_repository.Conn.Create(&feedHistory)
 	} else {
-		repo.DB.Save(&feedHistory)
+		app_repository.Conn.Save(&feedHistory)
 	}
 }

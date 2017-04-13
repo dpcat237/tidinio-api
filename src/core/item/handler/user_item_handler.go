@@ -4,7 +4,6 @@ import (
 	"github.com/tidinio/src/core/item/model"
 	"github.com/tidinio/src/core/item/repository"
 	"github.com/tidinio/src/core/item/data_transformer"
-	"github.com/tidinio/src/core/component/repository"
 	"github.com/tidinio/src/core/component/helper/collection"
 )
 
@@ -24,16 +23,13 @@ func SyncItems(userId uint, collection []item_model.UserItemSync, limit int) []i
 }
 
 func AddLastItemsNewUser(userId uint, feedId uint, quantity int) {
-	repo := app_repository.InitConnection()
-	items := item_repository.GetLastItems(repo, feedId, quantity)
+	items := item_repository.GetLastItems(feedId, quantity)
 	for _, item := range items {
-		userItem := item_repository.GetUserItemByItemUserId(repo, item.ID, userId)
+		userItem := item_repository.GetUserItemByItemUserId(item.ID, userId)
 		if (userItem.ID < 1) {
-			createUserItem(repo, userId, item.ID)
+			createUserItem(userId, item.ID)
 		}
 	}
-
-	defer repo.Close()
 }
 
 func addReadItems(userItems []item_model.UserItemSync, unreadUserItems []item_model.UserItem, items []item_model.Item) []item_model.UserItemSync {
@@ -48,12 +44,12 @@ func addReadItems(userItems []item_model.UserItemSync, unreadUserItems []item_mo
 	return userItems
 }
 
-func createUserItem(repo app_repository.Repository, userId uint, itemId uint) item_model.UserItem {
+func createUserItem(userId uint, itemId uint) item_model.UserItem {
 	userItem := item_model.UserItem{}
 	userItem.UserId = userId
 	userItem.ItemId = itemId
 	userItem.SetUnread()
-	item_repository.SaveUserItem(repo, &userItem)
+	item_repository.SaveUserItem(&userItem)
 
 	return userItem
 }
@@ -71,18 +67,17 @@ func filterUnread(items []item_model.UserItem, unread bool) []item_model.UserIte
 
 func getUnreadItems(userId uint, collection []item_model.UserItem, limit int) []item_model.UserItemSync {
 	userItems := []item_model.UserItemSync{}
-	repo := app_repository.InitConnection()
 	unreadIds := collection_helper.GetIdsFromUserItemCollectionStr(collection)
-	totalUnread := item_repository.CountUnreadByUser(repo, userId)
-	unreadUserItems := getUnreadItemsRecursive(userId, unreadIds, 0, limit, totalUnread, repo)
+	totalUnread := item_repository.CountUnreadByUser(userId)
+	unreadUserItems := getUnreadItemsRecursive(userId, unreadIds, 0, limit, totalUnread)
 	unreadItemsIds := collection_helper.GetItemIdsFromUserItemCollectionStr(unreadUserItems)
 	if (len(unreadItemsIds) > 0) {
-		items := item_repository.GetItemsByIds(repo, unreadItemsIds)
+		items := item_repository.GetItemsByIds(unreadItemsIds)
 		userItems = mergeUserItemData(items, unreadUserItems)
 	}
 
 	if (len(unreadIds) > 0) {
-		readItems := item_repository.GetReadItems(repo, userId, unreadIds)
+		readItems := item_repository.GetReadItems(userId, unreadIds)
 		if (len(readItems) > 0) {
 			userItems = addReadItems(userItems, unreadUserItems, readItems)
 		}
@@ -91,8 +86,8 @@ func getUnreadItems(userId uint, collection []item_model.UserItem, limit int) []
 	return userItems
 }
 
-func getUnreadItemsRecursive(userId uint, unreadIds []string, offset int, limit int, totalUnread int, repo app_repository.Repository) []item_model.UserItem {
-	unreadItems := item_repository.GetUnreadUserItems(repo, userId, unreadIds, offset, limit)
+func getUnreadItemsRecursive(userId uint, unreadIds []string, offset int, limit int, totalUnread int) []item_model.UserItem {
+	unreadItems := item_repository.GetUnreadUserItems(userId, unreadIds, offset, limit)
 	unreadCount := len(unreadItems)
 
 	offset += unreadCount
@@ -105,7 +100,7 @@ func getUnreadItemsRecursive(userId uint, unreadIds []string, offset int, limit 
 	if ((offset + limit) > totalUnread) {
 		limit = totalUnread - offset
 	}
-	moreUnreadItems := getUnreadItemsRecursive(userId, unreadIds, offset, limit, totalUnread, repo)
+	moreUnreadItems := getUnreadItemsRecursive(userId, unreadIds, offset, limit, totalUnread)
 
 	return item_model.MergeUserItems(unreadItems, moreUnreadItems)
 }
@@ -124,7 +119,5 @@ func mergeUserItemData(items []item_model.Item, userItems []item_model.UserItem)
 }
 
 func syncReadItems(items []item_model.UserItem) {
-	repo := app_repository.InitConnection()
-	item_repository.SyncReadItems(repo, items)
-	item_repository.Close(repo)
+	item_repository.SyncReadItems(items)
 }

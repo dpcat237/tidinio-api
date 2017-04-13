@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/mmcdole/gofeed"
 	"github.com/tidinio/src/core/feed/model"
-	"github.com/tidinio/src/core/component/repository"
 	"github.com/tidinio/src/core/feed/repository"
 	"github.com/tidinio/src/core/item/handler"
 	"github.com/tidinio/src/core/feed/redis"
@@ -25,15 +24,14 @@ func AddFeed(userId uint, feedUrl string) (feed_model.UserFeedSync, error) {
 		return userFeedSync, feedError
 	}
 
-	repo := app_repository.InitConnection()
-	feed := feed_repository.GetFeedByUrl(repo, feedUrl)
+	feed := feed_repository.GetFeedByUrl(feedUrl)
 	if (feed.ID > 0) {
-		userFeed := feed_repository.GetUserFeedByFeedAndUser(repo, feed.ID, userId)
+		userFeed := feed_repository.GetUserFeedByFeedAndUser(feed.ID, userId)
 		if (userFeed.ID > 0) {
 			return feed_transformer.ToUserFeedSync(userFeed), nil
 		}
 	} else if (feed.ID < 1) {
-		feed, feedError = createFeed(repo, feedUrl)
+		feed, feedError = createFeed(feedUrl)
 		updateFeedData(feed)
 		go func() {
 			afterFeedCreated(feed)
@@ -49,14 +47,13 @@ func AddFeed(userId uint, feedUrl string) (feed_model.UserFeedSync, error) {
 	go func() {
 		afterUserFeedModified(userId)
 	}()
-	userFeed := feed_repository.GetUserFeedByFeedAndUser(repo, feed.ID, userId)
+	userFeed := feed_repository.GetUserFeedByFeedAndUser(feed.ID, userId)
 
 	return feed_transformer.ToUserFeedSync(userFeed), feedError
 }
 
 func EditFeedTitle(userId uint, userFeedId uint, feedTitle string) error {
-	repo := app_repository.InitConnection()
-	userFeed := feed_repository.GetUserFeedById(repo, userFeedId)
+	userFeed := feed_repository.GetUserFeedById(userFeedId)
 	if (userFeed.ID < 1 || userFeed.UserId != userId) {
 		return errors.New("Wrong provided data")
 	}
@@ -66,7 +63,7 @@ func EditFeedTitle(userId uint, userFeedId uint, feedTitle string) error {
 	}
 
 	userFeed.Title = feedTitle
-	feed_repository.SaveUserFeed(repo, &userFeed)
+	feed_repository.SaveUserFeed(&userFeed)
 	go func() {
 		afterUserFeedModified(userId)
 	}()
@@ -81,11 +78,10 @@ func afterFeedCreated(feed feed_model.Feed) {
 		feed.Crawling, _ = conv.Int(crawling)
 	}
 
-	repo := app_repository.InitConnection()
-	feed_repository.SaveFeed(repo, &feed)
+	feed_repository.SaveFeed(&feed)
 }
 
-func createFeed(repo app_repository.Repository, feedUrl string) (feed_model.Feed, error) {
+func createFeed(feedUrl string) (feed_model.Feed, error) {
 	feed := feed_model.Feed{}
 	fp := gofeed.NewParser()
 	feedData, feedError := fp.ParseURL(feedUrl)
@@ -97,16 +93,14 @@ func createFeed(repo app_repository.Repository, feedUrl string) (feed_model.Feed
 	feed.Title = feedData.Title
 	feed.Website = feedData.Link
 	feed.Enable()
-	feed_repository.SaveFeed(repo, &feed)
+	feed_repository.SaveFeed(&feed)
 
 	return feed, nil
 }
 
 func detectFeedLanguage(feedId uint) string {
 	language := ""
-	repo := app_repository.InitConnection()
-	items := item_repository.GetLastItems(repo, feedId, 10)
-	defer repo.Close()
+	items := item_repository.GetLastItems(feedId, 10)
 	for _, item := range items {
 		language = string_helper.DetectLanguageFromHtml(item.Content)
 		if (language != "") {
@@ -119,9 +113,7 @@ func detectFeedLanguage(feedId uint) string {
 
 func detectFeedNeedCrawling(feedId uint) bool {
 	needsCrawling := true
-	repo := app_repository.InitConnection()
-	items := item_repository.GetLastItems(repo, feedId, 5)
-	defer repo.Close()
+	items := item_repository.GetLastItems(feedId, 5)
 
 	for _, item := range items {
 		needsCrawling = item_handler.IsItemNeedsCrawling(item)
@@ -157,22 +149,19 @@ func updateFeedData(feed feed_model.Feed) {
 		return
 	}
 
-	repo := app_repository.InitConnection()
 	count := 0
 	for _, item := range feedData.Items {
-		isNew := item_handler.CreateUpdateItem(repo, item, feed.ID)
+		isNew := item_handler.CreateUpdateItem(item, feed.ID)
 		if (isNew) {
 			count++
 		}
 	}
 
 	feed.UpdateDateSync()
-	feed_repository.SaveFeed(repo, &feed)
+	feed_repository.SaveFeed(&feed)
 	if (count > 0) {
 		updateHistoryDataChanged(feed.ID)
 	} else {
 		updateHistorySameData(feed.ID)
 	}
-
-	defer repo.Close()
 }

@@ -74,3 +74,5 @@ func SyncFeeds(w http.ResponseWriter, r *http.Request) {
 	userFeeds := feed_handler.SyncUserFeeds(user.ID, data.Feeds)
 	app_controller.ReturnJson(w, userFeeds)
 }
+
+//TODO: /feed/sources

@@ -8,16 +8,16 @@ import (
 
 const itemTable  = item_model.ItemTable
 
-func GetItemByLink(repo app_repository.Repository, link string) item_model.Item {
+func GetItemByLink(link string) item_model.Item {
 	item := item_model.Item{}
-	repo.DB.Where("link = ?", link).First(&item)
+	app_repository.Conn.Where("link = ?", link).First(&item)
 
 	return item
 }
 
-func GetItemsByIds(repo app_repository.Repository, ids []string) []item_model.Item {
+func GetItemsByIds(ids []string) []item_model.Item {
 	items := []item_model.Item{}
-	repo.DB.
+	app_repository.Conn.
 		Table(itemTable).
 		Select("item.id, item.feed_id, item.title, item.link, item.content, item.created_at, item.published_at, feed.language").
 		Joins("inner join feed on item.feed_id = feed.id and item.id IN(?)", ids).
@@ -26,16 +26,16 @@ func GetItemsByIds(repo app_repository.Repository, ids []string) []item_model.It
 	return items
 }
 
-func GetLastItems(repo app_repository.Repository, feedId uint, limit int) []item_model.Item {
+func GetLastItems(feedId uint, limit int) []item_model.Item {
 	items := []item_model.Item{}
-	repo.DB.Table(itemTable).Where("feed_id = ?", feedId).Limit(limit).Scan(&items)
+	app_repository.Conn.Table(itemTable).Where("feed_id = ?", feedId).Limit(limit).Scan(&items)
 
 	return items
 }
 
-func GetReadItems(repo app_repository.Repository, userId uint, unreadIds []string) []item_model.Item {
+func GetReadItems(userId uint, unreadIds []string) []item_model.Item {
 	results := []item_model.Item{}
-	repo.DB.
+	app_repository.Conn.
 		Table(itemTable).
 		Select(itemTable + ".id").
 		Joins(
@@ -47,19 +47,19 @@ func GetReadItems(repo app_repository.Repository, userId uint, unreadIds []strin
 	return results
 }
 
-func SaveItem(repo app_repository.Repository, item *item_model.Item) {
-	if (repo.DB.NewRecord(item)) {
-		repo.DB.Create(&item)
+func SaveItem(item *item_model.Item) {
+	if (app_repository.Conn.NewRecord(item)) {
+		app_repository.Conn.Create(&item)
 	} else {
-		repo.DB.Save(&item)
+		app_repository.Conn.Save(&item)
 	}
 }
 
-func SaveSharedItem(repo app_repository.Repository, item item_model.Item) item_model.Item {
+func SaveSharedItem(item item_model.Item) item_model.Item {
 	query := fmt.Sprintf(
 		"INSERT INTO " + itemTable + " (title, link) VALUES('%s', '%s');",
 		item.Title, item.Link)
-	repo.DB.Exec(query)
+	app_repository.Conn.Exec(query)
 
-	return GetItemByLink(repo, item.Link)
+	return GetItemByLink(item.Link)
 }

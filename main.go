@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/tidinio/app"
 	"log"
 	"net/http"
-	"github.com/tidinio/app"
 )
 
 func main() {

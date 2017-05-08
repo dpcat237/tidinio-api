@@ -36,6 +36,12 @@ var routes = Routes{
 		api_controller.EditFeed,
 	},
 	Route{
+		"Get feed sources",
+		"GET",
+		"/feed/sources",
+		api_controller.GetSources,
+	},
+	Route{
 		"Sync feeds",
 		"POST",
 		"/feed/sync",

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/tidinio/src/module/user/model"
 	"github.com/tidinio/src/module/user/handler"
+	"log"
 )
 
 func GetAuth(w http.ResponseWriter, r *http.Request) (user_model.UserBasic, error)   {
@@ -29,6 +30,7 @@ func GetAuthContent(w http.ResponseWriter, r *http.Request, data interface{}) (u
 	user, err := GetAuth(w, r)
 	if err != nil {
 		return user, err
+		log.Println()
 	}
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, r.ContentLength))

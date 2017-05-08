@@ -64,6 +64,15 @@ func EditFeed(w http.ResponseWriter, r *http.Request) {
 	app_controller.ReturnNoContent(w)
 }
 
+func GetSources(w http.ResponseWriter, r *http.Request) {
+	_, err := app_controller.GetAuth(w, r)
+	if err != nil {
+		return
+	}
+
+	app_controller.ReturnJson(w, feed_handler.GetFeedSources())
+}
+
 func SyncFeeds(w http.ResponseWriter, r *http.Request) {
 	data := syncFeeds{}
 	user, err := app_controller.GetAuthContent(w, r, &data)
@@ -74,5 +83,3 @@ func SyncFeeds(w http.ResponseWriter, r *http.Request) {
 	userFeeds := feed_handler.SyncUserFeeds(user.ID, data.Feeds)
 	app_controller.ReturnJson(w, userFeeds)
 }
-
-//TODO: /feed/sources

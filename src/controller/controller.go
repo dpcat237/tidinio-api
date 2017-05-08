@@ -50,3 +50,7 @@ func ReturnPreconditionFailed(w http.ResponseWriter, s string)  {
 func ReturnNoContent(w http.ResponseWriter)  {
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func ReturnServerFailed(w http.ResponseWriter)  {
+	http.Error(w, "Internal server error", http.StatusInternalServerError)
+}

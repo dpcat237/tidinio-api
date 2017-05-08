@@ -16,6 +16,13 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
+	/** Device **/
+	Route{
+		"Add push ID for device. Now Firebase",
+		"POST",
+		"/device/add",
+		api_controller.AddDevice,
+	},
 	/** Feed **/
 	Route{
 		"Add feed, subscribe user to this feed and add last items for user",

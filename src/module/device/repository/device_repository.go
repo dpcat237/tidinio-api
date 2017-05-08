@@ -13,3 +13,11 @@ func GetDevicesByUserId(userId uint) []device_model.Device {
 
 	return devices
 }
+
+func SaveDevice(device *device_model.Device) {
+	if app_repository.Conn.NewRecord(device) {
+		app_repository.Conn.Create(&device)
+	} else {
+		app_repository.Conn.Save(&device)
+	}
+}

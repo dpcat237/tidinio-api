@@ -1,6 +1,18 @@
 package device_handler
 
-import "github.com/tidinio/src/module/device/repository"
+import (
+	"github.com/tidinio/src/module/device/repository"
+	"github.com/tidinio/src/module/device/model"
+)
+
+func AddPushNotificationId(deviceKey string, userId uint, pushId string) {
+	device := device_model.Device{}
+	device.DeviceKey = deviceKey
+	device.UserId = userId
+	device.PushId = pushId
+
+	device_repository.SaveDevice(&device)
+}
 
 func GetDevicesKeyByUserId(userId uint) []string {
 	keys := []string{}

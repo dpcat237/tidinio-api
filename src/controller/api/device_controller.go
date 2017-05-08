@@ -18,5 +18,5 @@ func AddDevice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	device_handler.AddPushNotificationId(r.Header.Get("deviceId"), user.ID, data.PushId)
-	app_controller.ReturnNoContent(w)
+	app_controller.ReturnStatus(w, http.StatusCreated)
 }

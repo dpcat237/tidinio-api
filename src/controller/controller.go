@@ -51,6 +51,10 @@ func ReturnNoContent(w http.ResponseWriter)  {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func ReturnStatus(w http.ResponseWriter, status int)  {
+	w.WriteHeader(status)
+}
+
 func ReturnServerFailed(w http.ResponseWriter)  {
 	http.Error(w, "Internal server error", http.StatusInternalServerError)
 }

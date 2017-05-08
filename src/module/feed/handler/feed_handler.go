@@ -7,7 +7,6 @@ import (
 	"github.com/tidinio/src/module/feed/model"
 	"github.com/tidinio/src/component/helper/string"
 	"github.com/tidinio/src/module/feed/repository"
-	"github.com/tidinio/src/module/feed/data_transformer"
 	"github.com/tidinio/src/module/item/handler"
 	"github.com/tidinio/src/module/item/repository"
 	"github.com/tidinio/src/component/helper/http"
@@ -28,7 +27,7 @@ func AddFeed(userId uint, feedUrl string) (feed_model.UserFeedSync, error) {
 	if (feed.ID > 0) {
 		userFeed := feed_repository.GetUserFeedByFeedAndUser(feed.ID, userId)
 		if (userFeed.ID > 0) {
-			return feed_transformer.ToUserFeedSync(userFeed), nil
+			return feed_model.ToUserFeedSync(userFeed), nil
 		}
 	} else if (feed.ID < 1) {
 		feed, feedError = createFeed(feedUrl)
@@ -49,7 +48,7 @@ func AddFeed(userId uint, feedUrl string) (feed_model.UserFeedSync, error) {
 	}()
 	userFeed := feed_repository.GetUserFeedByFeedAndUser(feed.ID, userId)
 
-	return feed_transformer.ToUserFeedSync(userFeed), feedError
+	return feed_model.ToUserFeedSync(userFeed), feedError
 }
 
 func EditFeedTitle(userId uint, userFeedId uint, feedTitle string) error {

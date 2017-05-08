@@ -2,7 +2,6 @@ package item_handler
 
 import (
 	"github.com/tidinio/src/module/item/model"
-	"github.com/tidinio/src/module/item/data_transformer"
 	"github.com/tidinio/src/module/item/repository"
 	"github.com/tidinio/src/component/helper/collection"
 )
@@ -12,7 +11,7 @@ func SyncItems(userId uint, collection []item_model.UserItemSync, limit int) []i
 		return []item_model.UserItemSync{}
 	}
 
-	items := item_transformer.FromUserItemsSync(collection)
+	items := item_model.FromUserItemsSync(collection)
 	readItems := filterUnread(items, false)
 	if (len(readItems) > 0) {
 		syncReadItems(readItems)

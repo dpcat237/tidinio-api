@@ -4,7 +4,6 @@ import (
 	"github.com/tidinio/src/module/item/model"
 	"github.com/tidinio/src/component/helper/collection"
 	"github.com/tidinio/src/module/item/repository"
-	"github.com/tidinio/src/module/item/data_transformer"
 )
 
 var tagItemsAdd = []item_model.TagItem{}
@@ -45,7 +44,7 @@ func SyncTagItems(apiTagItems []item_model.TagItemList) []item_model.TagItemSync
 	//TODO: executeCrawling
 	userItemIds := collection_helper.GetUserItemIdsFromTagItemListCollectionStr(apiTagItems)
 
-	return item_transformer.ToTagItemSync(item_repository.GetUnreadTagItemsSync(userItemIds))
+	return item_model.ToTagItemSync(item_repository.GetUnreadTagItemsSync(userItemIds))
 }
 
 func addItemsTagsRelation(collection []item_model.TagItem) {

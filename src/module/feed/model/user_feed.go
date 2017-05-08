@@ -24,3 +24,21 @@ type UserFeedSync struct {
 func (UserFeed) TableName() string {
 	return UserFeedTable
 }
+
+func ToUserFeedsSync(userFeeds []UserFeed) []UserFeedSync {
+	userFeedsSync := []UserFeedSync{}
+	for _, userFeed := range userFeeds {
+		userFeedsSync = append(userFeedsSync, ToUserFeedSync(userFeed))
+	}
+
+	return userFeedsSync
+}
+
+func ToUserFeedSync(userFeed UserFeed) UserFeedSync {
+	userFeedSync := UserFeedSync{}
+	userFeedSync.ID = userFeed.ID
+	userFeedSync.Title = userFeed.Title
+	userFeedSync.UpdatedAt = userFeed.UpdatedAt
+
+	return userFeedSync
+}

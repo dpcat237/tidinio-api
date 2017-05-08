@@ -110,3 +110,35 @@ func MergeToTagItemsList(tagItems []TagItem, relatedTags map[uint][]uint) []TagI
 
 	return results
 }
+
+func ToTagItemSync(items []TagItemSyncDB) []TagItemSync {
+	result := []TagItemSync{}
+	orderedTags := moveTagItemsUnderUserItemId(items)
+	for userItemId, tags := range orderedTags {
+		item := TagItemSync{}
+		item.ArticleId = userItemId
+		item.Stared = tags[0].Stared
+		item.Tags = getTagsIds(tags)
+		result = append(result, item)
+	}
+
+	return result
+}
+
+func getTagsIds(collection []TagItemSyncDB) []uint {
+	result := []uint{}
+	for _, item := range collection {
+		result = append(result, item.TagId)
+	}
+
+	return result
+}
+
+func moveTagItemsUnderUserItemId(collection []TagItemSyncDB) map[uint][]TagItemSyncDB {
+	joined := make(map[uint][]TagItemSyncDB)
+	for _, tagItem := range collection {
+		joined[tagItem.ArticleId] = append(joined[tagItem.ArticleId], tagItem)
+	}
+
+	return joined
+}

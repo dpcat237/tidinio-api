@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/tidinio/src/module/feed/model"
 	"github.com/tidinio/src/module/feed/repository"
-	"github.com/tidinio/src/module/feed/data_transformer"
 	"github.com/tidinio/src/component/repository"
 	"github.com/tidinio/src/component/notifier/fcm"
 )
@@ -16,7 +15,7 @@ func SyncUserFeeds(userId uint, userFeedsApi []feed_model.UserFeedSync) []feed_m
 	}
 
 	if len(userFeedsApi) < 1 {
-		return feed_transformer.ToUserFeedsSync(userFeeds)
+		return feed_model.ToUserFeedsSync(userFeeds)
 	}
 
 	modified := false
@@ -40,7 +39,7 @@ func SyncUserFeeds(userId uint, userFeedsApi []feed_model.UserFeedSync) []feed_m
 		}()
 	}
 
-	return feed_transformer.ToUserFeedsSync(feed_repository.GetUserFeedsByUserId(userId))
+	return feed_model.ToUserFeedsSync(feed_repository.GetUserFeedsByUserId(userId))
 }
 
 func SubscribeUserToFeed(userId uint, feed feed_model.Feed) {

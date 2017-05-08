@@ -22,6 +22,19 @@ func (UserItem) TableName() string {
 	return UserItemTable
 }
 
+func FromUserItemsSync(items []UserItemSync) []UserItem {
+	result := []UserItem{}
+	for _, item := range items {
+		uItem := UserItem{}
+		uItem.ID = item.ID
+		uItem.Unread, _ = conv.Int(item.Unread)
+		uItem.Stared, _ = conv.Int(item.Stared)
+		result = append(result, uItem)
+	}
+
+	return result
+}
+
 type UserItemSync struct {
 	ID        uint      `json:"article_id"`
 	FeedId    uint      `json:"feed_id"`

@@ -47,7 +47,7 @@ func GetUnreadUserItemsContent(unreadIds []string) []item_model.TagItemList {
 	fTb := "feed"
 	app_repository.Conn.
 		Table(userItemTable).
-		Select(userItemTable + ".id article_id, " + fTb + ".id feed_id, " + userItemTable + ".stared, " + fTb +
+		Select(userItemTable + ".id user_item_id, " + fTb + ".id feed_id, " + userItemTable + ".stared, " + fTb +
 		".language, " + iTb + ".link, " + iTb + ".title, " + iTb + ".content, " + iTb + ".created_at, " + iTb + ".published_at").
 		Joins(
 		"inner join " + iTb + " on " + userItemTable + ".item_id = " + iTb + ".id " +

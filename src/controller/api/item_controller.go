@@ -32,7 +32,7 @@ func AddSharedItem(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	if (len(data.Articles) < 1) {
+	if len(data.Articles) < 1 {
 		app_controller.ReturnPreconditionFailed(w, "No articles")
 	}
 

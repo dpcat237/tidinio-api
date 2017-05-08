@@ -17,7 +17,7 @@ type TagItem struct {
 
 type TagItemList struct {
 	ArticleId   uint      `json:"article_id" gorm:"column:user_item_id"`
-	FeedId      uint      `json:"feed_id"`
+	FeedId      uint      `json:"feed_id"  gorm:"column:feed_id"`
 	Language    string    `json:"language"`
 	Stared      bool      `json:"is_stared"`
 	Link        string    `json:"link"`
@@ -44,7 +44,7 @@ func (TagItem) TableName() string {
 }
 
 func (item TagItem) IsUnread() bool {
-	if (item.Unread > 0) {
+	if item.Unread > 0 {
 		return true
 	}
 
@@ -53,9 +53,9 @@ func (item TagItem) IsUnread() bool {
 
 func AddTagItemsListContent(tagItems []TagItemList, tagItemsContent []TagItemList) []TagItemList {
 	for _, tagItem := range tagItems {
-		for _, tagItemContent := range tagItemsContent {
-			if (tagItem.ArticleId == tagItemContent.ArticleId) {
-				tagItemContent.Tags = tagItem.Tags
+		for idx, tagItemContent := range tagItemsContent {
+			if tagItem.ArticleId == tagItemContent.ArticleId {
+				tagItemsContent[idx].Tags = tagItem.Tags
 			}
 		}
 	}
@@ -65,7 +65,7 @@ func AddTagItemsListContent(tagItems []TagItemList, tagItemsContent []TagItemLis
 
 func (item TagItemList) HasTag(tagId uint) bool {
 	for _, tag := range item.Tags {
-		if (tag == tagId) {
+		if tag == tagId {
 			return true
 		}
 	}

@@ -16,7 +16,7 @@ func AddSharedItems(userId uint, collection []item_model.SharedItem) {
 }
 
 func GetUnreadTagItems(unreadTagItemsIds []uint, tagsIds []uint, limit int) []item_model.TagItemList {
-	if (limit < 1) {
+	if limit < 1 {
 		return []item_model.TagItemList{}
 	}
 
@@ -25,7 +25,7 @@ func GetUnreadTagItems(unreadTagItemsIds []uint, tagsIds []uint, limit int) []it
 
 	totalUnread := item_repository.TotalUnreadTagItems(tagsIdsStr)
 	tagItemsList := getUnreadTagItemsRecursive(tagsIdsStr, unreadTagItemsIdsStr, 0, limit + 5, totalUnread)
-	if (len(tagItemsList) < 1) {
+	if len(tagItemsList) < 1 {
 		return []item_model.TagItemList{}
 	}
 
@@ -36,7 +36,7 @@ func GetUnreadTagItems(unreadTagItemsIds []uint, tagsIds []uint, limit int) []it
 }
 
 func SyncTagItems(apiTagItems []item_model.TagItemList) []item_model.TagItemSync {
-	if (len(apiTagItems) < 1) {
+	if len(apiTagItems) < 1 {
 		return []item_model.TagItemSync{}
 	}
 
@@ -152,13 +152,13 @@ totalUnread int) []item_model.TagItemList {
 
 	unreadCount := len(tagItemsList)
 	offset += unreadCount
-	if (unreadCount >= limit || (offset + 1) >= totalUnread || limit < 5) {
+	if unreadCount >= limit || (offset + 1) >= totalUnread || limit < 5 {
 		//added 5 just in case to don't do a lot of loops for few items
 		return tagItemsList
 	}
 
 	limit -= unreadCount
-	if ((offset + limit) > totalUnread) {
+	if (offset + limit) > totalUnread {
 		limit = totalUnread - offset
 	}
 	moreUnreadItems := getUnreadTagItemsRecursive(tagsIds, unreadTagItemsIds, offset, limit, totalUnread)
@@ -176,17 +176,17 @@ func updateLocalTagItems(tagItems []item_model.TagItemList) {
 	MoveTagItemsUnderUserItemId(item_repository.GetTagsByUserItemIds(collection_helper.GetUserItemIdsFromTagItemListCollectionStr(tagItems), 1))
 
 	for userItemId, userItemTags := range dbItems {
-		if (len(apiItems[userItemId].Tags) > 0) {
+		if len(apiItems[userItemId].Tags) > 0 {
 			checkTagItemDifferences(apiItems[userItemId], userItemTags)
 		}
 	}
 
-	if (len(tagItemsRemove) > 0) {
+	if len(tagItemsRemove) > 0 {
 		item_repository.MarkAsUnread(tagItemsRemove, 0)
 		tagItemsRemove = make(map[uint][]uint)
 	}
 
-	if (len(tagItemsAdd) > 0) {
+	if len(tagItemsAdd) > 0 {
 		addItemsTagsRelation(tagItemsAdd)
 		tagItemsAdd = []item_model.TagItem{}
 	}

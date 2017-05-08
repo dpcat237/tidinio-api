@@ -19,7 +19,7 @@ func CreateTagItems(collection []item_model.TagItem) {
 
 func GetTagItemByUserItemTagId(userItemId uint, tagId uint) item_model.TagItem {
 	tagItem := item_model.TagItem{}
-	app_repository.Conn.Where("user_item_id = ? AND later_id = ?", userItemId, tagId).First(&tagItem)
+	app_repository.Conn.Where("user_item_id = ? AND tag_id = ?", userItemId, tagId).First(&tagItem)
 
 	return tagItem
 }
@@ -28,7 +28,7 @@ func GetTagsByUserItemIds(userItemIds []string, unread int) []item_model.TagItem
 	results := []item_model.TagItem{}
 	app_repository.Conn.
 		Table(tagItemTable).
-		Select("id, user_item_id, later_id").
+		Select("id, user_item_id, tag_id").
 		Where("unread = ? AND user_item_id IN(?)", unread, userItemIds).
 		Scan(&results)
 
@@ -44,7 +44,7 @@ limit int) []item_model.TagItem {
 	app_repository.Conn.
 		Table(tagItemTable).
 		Select("id, user_item_id, unread").
-		Where("unread = ? AND later_id IN(?) AND id NOT IN(?)", 1, tagsIds, tagItemsIds).
+		Where("unread = ? AND tag_id IN(?) AND id NOT IN(?)", 1, tagsIds, tagItemsIds).
 		Offset(offset).
 		Limit(limit).
 		Scan(&results)
@@ -56,7 +56,7 @@ func GetUnreadTagItemsSync(userItemIds []string) []item_model.TagItemSyncDB {
 	results := []item_model.TagItemSyncDB{}
 	app_repository.Conn.
 		Table(tagItemTable).
-		Select(tagItemTable + ".id, " + tagItemTable + ".user_item_id, " + tagItemTable + ".later_id, " + userItemTable +
+		Select(tagItemTable + ".id, " + tagItemTable + ".user_item_id, " + tagItemTable + ".tag_id, " + userItemTable +
 		".stared").
 		Joins(
 		"inner join " + userItemTable + " on " + tagItemTable + ".user_item_id = " + userItemTable + ".id " +
@@ -73,7 +73,7 @@ func MarkAsUnread(collection map[uint][]uint, unread int) {
 	for userItemId, tagsId := range collection {
 		for _, tagId := range tagsId {
 			query := fmt.Sprintf(
-				"UPDATE later_item SET unread='%d', updated_at='%s' WHERE user_item_id='%d' AND later_id='%d';",
+				"UPDATE later_item SET unread='%d', updated_at='%s' WHERE user_item_id='%d' AND tag_id='%d';",
 				unread, now, userItemId, tagId)
 			tx.Exec(query)
 		}
@@ -91,7 +91,7 @@ func SaveTagItem(tagItem *item_model.TagItem) {
 
 func TotalUnreadTagItems(tagsIds []string) int {
 	count := 0
-	app_repository.Conn.Table(tagItemTable).Select("id").Where("unread = ? AND later_id IN(?)", 1, tagsIds).Count(&count)
+	app_repository.Conn.Table(tagItemTable).Select("id").Where("unread = ? AND tag_id IN(?)", 1, tagsIds).Count(&count)
 
 	return count
 }

@@ -5,13 +5,13 @@ import (
 	"time"
 )
 
-const TagItemTable = "later_item"
+const TagItemTable = "tag_item"
 
 type TagItem struct {
 	gorm.Model
 
 	UserItemId uint
-	TagId      uint `gorm:"column:later_id"`
+	TagId      uint `gorm:"column:tag_id"`
 	Unread     int
 }
 
@@ -36,7 +36,7 @@ type TagItemSync struct {
 type TagItemSyncDB struct {
 	ArticleId uint      `gorm:"column:user_item_id"`
 	Stared    bool      `json:"is_stared"`
-	TagId     uint      `gorm:"column:later_id"`
+	TagId     uint      `gorm:"column:tag_id"`
 }
 
 func (TagItem) TableName() string {

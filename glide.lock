@@ -1,0 +1,96 @@
+hash: 9346dfc2a9c2b057fb4d3b74c1656fc1a4663de74f783e6695e1be904ddabdfa
+updated: 2017-05-19T18:51:43.84700046Z
+imports:
+- name: github.com/abadojack/whatlanggo
+  version: 6f8588be1544807416568b453f786a24284d0417
+- name: github.com/andybalholm/cascadia
+  version: 349dd0209470eabd9514242c688c403c0926d266
+- name: github.com/cdipaolo/goml
+  version: e2d8def04c9a19893aba223c21899c77089651ee
+  subpackages:
+  - base
+  - text
+- name: github.com/cstockton/go-conv
+  version: 4f5d7d0741daefda544681ef5613ff8bc2fc65c1
+- name: github.com/cstockton/go-iter
+  version: 353ca660c5db366129be2acc4c4c6807185474e9
+- name: github.com/djimenez/iconv-go
+  version: 8960e66bd3dacbc8773962b40eb82fc18c63c127
+- name: github.com/dpcat237/articletext
+  version: 1fb1f5fd32d67a1286785f7752b23f875caaa6aa
+- name: github.com/go-redis/redis
+  version: 84163af3c14a312750f6182c2b2dd6ee37699b53
+  subpackages:
+  - internal
+  - internal/consistenthash
+  - internal/hashtag
+  - internal/pool
+  - internal/proto
+- name: github.com/go-sql-driver/mysql
+  version: 382e13d099fcf5f5994290892ab258fbebbdc5e3
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/mux
+  version: 392c28fe23e1c45ddba891b0320b3b5df220beea
+- name: github.com/jaytaylor/html2text
+  version: f3b8a7ca0a23f0a806b2e1ad1247de39ecde54bf
+- name: github.com/jinzhu/gorm
+  version: 5174cc5c242a728b435ea2be8a2f7f998e15429b
+  subpackages:
+  - dialects/mysql
+- name: github.com/jinzhu/inflection
+  version: 1c35d901db3da928c72a72d8458480cc9ade058f
+- name: github.com/microcosm-cc/bluemonday
+  version: e79763773ab6222ca1d5a7cbd9d62d83c1f77081
+- name: github.com/mmcdole/gofeed
+  version: 303223474e837398b2f8a265e5572958bb5568c0
+  subpackages:
+  - atom
+  - extensions
+  - internal/shared
+  - rss
+- name: github.com/mmcdole/goxpp
+  version: e38884aa48c1952a416ba35f3c276e4f02f9b40e
+- name: github.com/NaySoftware/go-fcm
+  version: 8b8dc5883a3bfd52fd4d296d2ab89aa1b703aed4
+- name: github.com/Obaied/RAKE.go
+  version: ea334dbbc4ffe071f71d2a46d780198160d75500
+- name: github.com/olebedev/config
+  version: afea898d27c7d17376ecc60c7c2e73c76b40060e
+- name: github.com/PuerkitoBio/goquery
+  version: ed7d758e9a34ba1f55e8084e0d731448b46921a8
+- name: github.com/saintfish/chardet
+  version: 3af4cd4741ca4f3eb0c407c034571a6fb0ea529c
+- name: github.com/ssor/bom
+  version: 6ed919a936d5ab554e4b40bc51f7c522488122c6
+- name: golang.org/x/net
+  version: 513929065c19401a1c7b76ecd942f9f86a0c061b
+  subpackages:
+  - html
+  - html/atom
+  - html/charset
+- name: golang.org/x/text
+  version: 19e51611da83d6be54ddafce4a4af510cb3e9ea4
+  subpackages:
+  - encoding
+  - encoding/charmap
+  - encoding/htmlindex
+  - encoding/internal
+  - encoding/internal/identifier
+  - encoding/japanese
+  - encoding/korean
+  - encoding/simplifiedchinese
+  - encoding/traditionalchinese
+  - encoding/unicode
+  - internal/tag
+  - internal/utf8internal
+  - language
+  - runes
+  - transform
+- name: gopkg.in/neurosnap/sentences.v1
+  version: a7f18ead1433a139742a8b42ce7a059cfb484d60
+  subpackages:
+  - data
+- name: gopkg.in/yaml.v2
+  version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
+testImports: []

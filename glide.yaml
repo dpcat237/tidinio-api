@@ -1,0 +1,26 @@
+package: github.com/tidinio
+import:
+- package: github.com/NaySoftware/go-fcm
+- package: github.com/Obaied/RAKE.go
+- package: github.com/abadojack/whatlanggo
+- package: github.com/cdipaolo/goml
+  subpackages:
+  - base
+  - text
+- package: github.com/cstockton/go-conv
+  version: "1.0"
+- package: github.com/djimenez/iconv-go
+- package: github.com/dpcat237/articletext
+- package: github.com/go-redis/redis
+  version: v6.3.2
+- package: github.com/gorilla/mux
+  version: v1.3.0
+- package: github.com/jinzhu/gorm
+  version: v1.0
+  subpackages:
+  - dialects/mysql
+- package: github.com/microcosm-cc/bluemonday
+- package: github.com/mmcdole/gofeed
+  version: v1.0.0-beta
+- package: github.com/olebedev/config
+- package: github.com/saintfish/chardet

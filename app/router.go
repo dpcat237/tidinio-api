@@ -2,7 +2,9 @@ package app
 
 import (
 	"net/http"
+
 	"github.com/gorilla/mux"
+
 	"github.com/tidinio/src/controller/api"
 )
 
@@ -78,6 +80,31 @@ var routes = Routes{
 		"POST",
 		"/saved_article/sync",
 		api_controller.SyncTagItems,
+	},
+	/** Tag **/
+	Route{
+		"Add tags",
+		"POST",
+		"/tag",
+		api_controller.AddTags,
+	},
+	Route{
+		"Delete tags",
+		"DELETE",
+		"/tag",
+		api_controller.DeleteTags,
+	},
+	Route{
+		"Get tags",
+		"GET",
+		"/tag",
+		api_controller.GetTags,
+	},
+	Route{
+		"Update tags",
+		"PUT",
+		"/tag",
+		api_controller.UpdateTags,
 	},
 	/** User **/
 	Route{

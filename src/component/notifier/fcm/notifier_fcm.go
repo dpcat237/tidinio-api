@@ -7,12 +7,21 @@ import (
 )
 
 const (
+	NoticeApi = "api"
+	NoticeWeb = "web"
+
+	//Feed
 	SyncFeeds = "sync_feeds"
+
+	//Tag
+	AddTags    = "add_tags"
+	DeleteTags = "delete_tags"
+	UpdateTags = "update_tags"
 )
 
 func RequireToSync(command string, userId uint) {
 	devices := device_handler.GetDevicesKeyByUserId(userId)
-	if (len(devices) < 1) {
+	if len(devices) < 1 {
 		return
 	}
 
@@ -30,6 +39,37 @@ func RequireToSync(command string, userId uint) {
 
 		return
 	}
-
 	app_logger.Error(err)*/
+}
+
+func Send(userId uint, command string, data string, noticeType string) {
+	devices := device_handler.GetDevicesKeyByUserId(userId)
+	if !isEnoughDevices(len(devices), noticeType) {
+		return
+	}
+
+	body := map[string]string{
+		"msg": command,
+		"sum": data,
+	}
+	serverKey, _ := app_conf.Data.String("fcm.serverKey")
+	c := fcm.NewFcmClient(serverKey)
+	c.NewFcmRegIdsMsg(devices, body)
+
+	/*status, err := c.Send()
+	if err == nil {
+		status.PrintResults()
+
+		return
+	}
+	app_logger.Error(err)*/
+}
+
+func isEnoughDevices(quantity int, noticeType string) bool {
+	if noticeType == NoticeApi && quantity > 2 {
+		return true
+	} else if noticeType == NoticeWeb && quantity > 1 {
+		return true
+	}
+	return false
 }

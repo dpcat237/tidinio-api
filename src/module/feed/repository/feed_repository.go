@@ -20,7 +20,7 @@ func GetFeedByUrl(link string) feed_model.Feed {
 }
 
 func SaveFeed(feed *feed_model.Feed) {
-	if (app_repository.Conn.NewRecord(feed)) {
+	if app_repository.Conn.NewRecord(feed) {
 		app_repository.Conn.Create(&feed)
 	} else {
 		app_repository.Conn.Save(&feed)

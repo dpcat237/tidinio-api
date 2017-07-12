@@ -2,7 +2,9 @@ package api_controller
 
 import (
 	"net/http"
+
 	"github.com/gorilla/mux"
+
 	"github.com/tidinio/src/component/helper/string"
 	"github.com/tidinio/src/controller"
 	"github.com/tidinio/src/module/feed/model"

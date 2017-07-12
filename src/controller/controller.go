@@ -1,14 +1,15 @@
 package app_controller
 
 import (
+	"errors"
+	"net/http"
 	"io/ioutil"
 	"io"
-	"net/http"
 	"encoding/json"
-	"errors"
+	"log"
+
 	"github.com/tidinio/src/module/user/model"
 	"github.com/tidinio/src/module/user/handler"
-	"log"
 )
 
 func GetAuth(w http.ResponseWriter, r *http.Request) (user_model.UserBasic, error)   {

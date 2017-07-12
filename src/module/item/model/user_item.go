@@ -1,9 +1,10 @@
 package item_model
 
 import (
-	"github.com/jinzhu/gorm"
 	"time"
+
 	"github.com/cstockton/go-conv"
+	"github.com/jinzhu/gorm"
 )
 
 const UserItemTable = "user_item"

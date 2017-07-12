@@ -2,12 +2,13 @@ package collection_helper
 
 import (
 	"fmt"
+
 	"github.com/tidinio/src/module/item/model"
 )
 
 func CheckIdExistInCollection(id uint, collection []uint) bool {
 	for _, key := range collection {
-		if (key == id) {
+		if key == id {
 			return true
 		}
 	}

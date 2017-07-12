@@ -1,8 +1,8 @@
 package feed_repository
 
 import (
-	"github.com/tidinio/src/module/feed/model"
 	"github.com/tidinio/src/component/repository"
+	"github.com/tidinio/src/module/feed/model"
 )
 
 const userFeedTable  = feed_model.UserFeedTable

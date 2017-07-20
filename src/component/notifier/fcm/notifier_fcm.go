@@ -13,6 +13,11 @@ const (
 	//Feed
 	SyncFeeds = "sync_feeds"
 
+	//Filter
+	AddFilters    = "add_filters"
+	DeleteFilters = "delete_filters"
+	UpdateFilters = "update_filters"
+
 	//Tag
 	AddTags    = "add_tags"
 	DeleteTags = "delete_tags"

@@ -2,6 +2,9 @@ package collection_helper
 
 import (
 	"fmt"
+	"reflect"
+
+	"github.com/cznic/sortutil"
 
 	"github.com/tidinio/src/module/item/model"
 )
@@ -23,6 +26,14 @@ func ConvertIntToStringSlice(collection []uint) []string {
 	}
 
 	return result
+}
+
+func EqualeUintSlice(sliceA [] uint, sliceB [] uint) bool {
+	sa := sortutil.UintSlice(sliceA)
+	sb := sortutil.UintSlice(sliceB)
+	sa.Sort()
+	sb.Sort()
+	return reflect.DeepEqual(sa, sb)
 }
 
 func GetIdsFromUserItemCollectionStr(collection []item_model.UserItem) []string {

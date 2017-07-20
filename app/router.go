@@ -18,6 +18,31 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
+	/** Article **/
+	Route{
+		"Add shared article",
+		"POST",
+		"/article/add_shared",
+		api_controller.AddSharedItem,
+	},
+	Route{
+		"Sync items",
+		"POST",
+		"/article/sync",
+		api_controller.SyncItems,
+	},
+	Route{
+		"Get saved articles",
+		"POST",
+		"/saved_article/list",
+		api_controller.ListTagItems,
+	},
+	Route{
+		"Sync saved articles changes",
+		"POST",
+		"/saved_article/sync",
+		api_controller.SyncTagItems,
+	},
 	/** Device **/
 	Route{
 		"Add push ID for device. Now Firebase",
@@ -56,30 +81,30 @@ var routes = Routes{
 		"/feed/sync",
 		api_controller.SyncFeeds,
 	},
-	/** Item **/
+	/** Filter **/
 	Route{
-		"Add shared article",
+		"Add filters",
 		"POST",
-		"/article/add_shared",
-		api_controller.AddSharedItem,
+		"/filter",
+		api_controller.AddFilters,
 	},
 	Route{
-		"Sync items",
-		"POST",
-		"/article/sync",
-		api_controller.SyncItems,
+		"Delete filters",
+		"DELETE",
+		"/filter",
+		api_controller.DeleteFilters,
 	},
 	Route{
-		"Get saved articles",
-		"POST",
-		"/saved_article/list",
-		api_controller.ListTagItems,
+		"Get filters",
+		"GET",
+		"/filter",
+		api_controller.GetFilters,
 	},
 	Route{
-		"Sync saved articles changes",
-		"POST",
-		"/saved_article/sync",
-		api_controller.SyncTagItems,
+		"Update filters",
+		"PUT",
+		"/filter",
+		api_controller.UpdateFilters,
 	},
 	/** Tag **/
 	Route{

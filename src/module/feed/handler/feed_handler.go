@@ -2,15 +2,17 @@ package feed_handler
 
 import (
 	"errors"
-	"github.com/mmcdole/gofeed"
+
 	"github.com/cstockton/go-conv"
-	"github.com/tidinio/src/module/feed/model"
+	"github.com/mmcdole/gofeed"
+
+	"github.com/tidinio/src/component/helper/http"
 	"github.com/tidinio/src/component/helper/string"
+	"github.com/tidinio/src/module/feed/cache"
+	"github.com/tidinio/src/module/feed/model"
 	"github.com/tidinio/src/module/feed/repository"
 	"github.com/tidinio/src/module/item/handler"
 	"github.com/tidinio/src/module/item/repository"
-	"github.com/tidinio/src/component/helper/http"
-	"github.com/tidinio/src/module/feed/redis"
 )
 
 func AddFeed(userId uint, feedUrl string) (feed_model.UserFeedSync, error) {
@@ -74,7 +76,7 @@ func afterFeedCreated(feed feed_model.Feed) {
 	feed.Language = detectFeedLanguage(feed.ID)
 	crawling := detectFeedNeedCrawling(feed.ID)
 	if (crawling) {
-		feed.Crawling, _ = conv.Int(crawling)
+		feed.Crawling = conv.Int(crawling)
 	}
 
 	feed_repository.SaveFeed(&feed)
@@ -126,13 +128,13 @@ func detectFeedNeedCrawling(feedId uint) bool {
 
 func isFeedDataChanged(feed feed_model.Feed) bool {
 	currentHash := http_helper.GetHashFromUrlData(feed.Url)
-	lastHash := feed_redis.GetDataHash(feed.ID)
+	lastHash := feed_cache.GetDataHash(feed.ID)
 	if (currentHash == lastHash) {
 		updateHistorySameData(feed.ID)
 
 		return false
 	}
-	feed_redis.SetDataHash(feed.ID, currentHash)
+	feed_cache.SetDataHash(feed.ID, currentHash)
 
 	return true
 }

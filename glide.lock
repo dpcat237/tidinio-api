@@ -1,5 +1,5 @@
 hash: 9346dfc2a9c2b057fb4d3b74c1656fc1a4663de74f783e6695e1be904ddabdfa
-updated: 2017-07-20T16:31:35.557236322Z
+updated: 2017-07-28T10:11:40.636365639Z
 imports:
 - name: github.com/abadojack/whatlanggo
   version: 6f8588be1544807416568b453f786a24284d0417
@@ -19,7 +19,7 @@ imports:
 - name: github.com/djimenez/iconv-go
   version: 8960e66bd3dacbc8773962b40eb82fc18c63c127
 - name: github.com/dpcat237/articletext
-  version: 1fb1f5fd32d67a1286785f7752b23f875caaa6aa
+  version: d71a13acf76d89d6be4e1dfc1451fe9158e118cc
 - name: github.com/go-redis/redis
   version: 84163af3c14a312750f6182c2b2dd6ee37699b53
   subpackages:
@@ -60,7 +60,7 @@ imports:
 - name: github.com/Obaied/RAKE.go
   version: ea334dbbc4ffe071f71d2a46d780198160d75500
 - name: github.com/olebedev/config
-  version: afea898d27c7d17376ecc60c7c2e73c76b40060e
+  version: 142c005175618f9116a60676c4eec0b3859f4afe
 - name: github.com/olekukonko/tablewriter
   version: be5337e7b39e64e5f91445ce7e721888dbab7387
 - name: github.com/PuerkitoBio/goquery
@@ -69,8 +69,13 @@ imports:
   version: 3af4cd4741ca4f3eb0c407c034571a6fb0ea529c
 - name: github.com/ssor/bom
   version: 6386211fdfcf24c0bfbdaceafd02849ed9a8a509
+- name: golang.org/x/crypto
+  version: 27b9897dfcda296fc086003b6e46fca80a29512d
+  subpackages:
+  - bcrypt
+  - blowfish
 - name: golang.org/x/net
-  version: 7b7efd8000731a766f6cbfa2c04010627521c66e
+  version: f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f
   subpackages:
   - html
   - html/atom
@@ -98,5 +103,5 @@ imports:
   subpackages:
   - data
 - name: gopkg.in/yaml.v2
-  version: 3b4ad1db5b2a649883ff3782f5f9f6fb52be71af
+  version: 25c4ec802a7d637f88d584ab26798e94ad14c13b
 testImports: []

@@ -44,7 +44,7 @@ func (filter Filter) ConvertToFilterSync() FilterSync {
 	filterSync.ID = filter.ID
 	filterSync.Name = filter.Name
 	filterSync.Type = filter.Type
-	filterSync.Enabled, _ = conv.Bool(filter.Enabled)
+	filterSync.Enabled = conv.Bool(filter.Enabled)
 	filterSync.TagId = filter.TagId
 	filterSync.UpdatedAt = filter.UpdatedAt
 	return filterSync
@@ -86,7 +86,7 @@ func JoinToUpdate(filterUpdate FilterUpdate, filterSync FilterSync) Filter {
 	filter.UpdatedAt = filterSync.UpdatedAt
 	filter.Name = filterSync.Name
 	filter.Type = filterUpdate.Type
-	filter.Enabled, _ = conv.Int(filterSync.Enabled)
+	filter.Enabled = conv.Int(filterSync.Enabled)
 	filter.UserId = filterUpdate.UserId
 	filter.TagId = filterSync.TagId
 	return filter

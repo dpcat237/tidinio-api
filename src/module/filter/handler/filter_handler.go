@@ -89,7 +89,7 @@ func addFilter(userId uint, filterApi filter_model.FilterSync) filter_model.Filt
 	filter := filter_model.Filter{}
 	filter.Type = filterApi.Type
 	filter.Name = filterApi.Name
-	filter.Enabled, _ = conv.Int(filterApi.Enabled)
+	filter.Enabled = conv.Int(filterApi.Enabled)
 	filter.TagId = filterApi.TagId
 	filter.UserId = userId
 	filter_repository.SaveFilter(&filter)

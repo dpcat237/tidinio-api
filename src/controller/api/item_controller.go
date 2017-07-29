@@ -30,6 +30,7 @@ func AddSharedItem(w http.ResponseWriter, r *http.Request) {
 	data := sharedItems{}
 	user, err := app_controller.GetAuthContent(w, r, &data)
 	if err != nil {
+		app_controller.ReturnPreconditionFailed(w, err.Error())
 		return
 	}
 	if len(data.Articles) < 1 {
@@ -44,6 +45,7 @@ func ListTagItems(w http.ResponseWriter, r *http.Request) {
 	data := listTagItems{}
 	_, err := app_controller.GetAuthContent(w, r, &data)
 	if err != nil {
+		app_controller.ReturnPreconditionFailed(w, err.Error())
 		return
 	}
 
@@ -55,6 +57,7 @@ func SyncItems(w http.ResponseWriter, r *http.Request) {
 	data := syncItems{}
 	user, err := app_controller.GetAuthContent(w, r, &data)
 	if err != nil {
+		app_controller.ReturnPreconditionFailed(w, err.Error())
 		return
 	}
 
@@ -66,6 +69,7 @@ func SyncTagItems(w http.ResponseWriter, r *http.Request) {
 	data := syncTagItems{}
 	_, err := app_controller.GetAuthContent(w, r, &data)
 	if err != nil {
+		app_controller.ReturnPreconditionFailed(w, err.Error())
 		return
 	}
 

@@ -14,6 +14,7 @@ var tagsSync = []tag_model.TagSync{}
 func AddTags(w http.ResponseWriter, r *http.Request) {
 	user, err := app_controller.GetAuthContent(w, r, &tagsSync)
 	if err != nil {
+		app_controller.ReturnPreconditionFailed(w, err.Error())
 		return
 	}
 	tags := tag_handler.AddTags(user.ID, tagsSync, app_fcm.NoticeApi)
@@ -23,6 +24,7 @@ func AddTags(w http.ResponseWriter, r *http.Request) {
 func DeleteTags(w http.ResponseWriter, r *http.Request) {
 	user, err := app_controller.GetAuthContent(w, r, &tagsSync)
 	if err != nil {
+		app_controller.ReturnPreconditionFailed(w, err.Error())
 		return
 	}
 	tag_handler.DeleteTags(user.ID, tagsSync, app_fcm.NoticeApi)
@@ -32,6 +34,7 @@ func DeleteTags(w http.ResponseWriter, r *http.Request) {
 func GetTags(w http.ResponseWriter, r *http.Request) {
 	user, err := app_controller.GetAuth(w, r)
 	if err != nil {
+		app_controller.ReturnPreconditionFailed(w, err.Error())
 		return
 	}
 	app_controller.ReturnJson(w, tag_handler.GetTags(user.ID))
@@ -40,6 +43,7 @@ func GetTags(w http.ResponseWriter, r *http.Request) {
 func UpdateTags(w http.ResponseWriter, r *http.Request) {
 	user, err := app_controller.GetAuthContent(w, r, &tagsSync)
 	if err != nil {
+		app_controller.ReturnPreconditionFailed(w, err.Error())
 		return
 	}
 	tag_handler.UpdateTags(user.ID, tagsSync, app_fcm.NoticeApi)

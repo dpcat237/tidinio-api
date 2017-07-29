@@ -14,6 +14,7 @@ func UpdateNotificationId(w http.ResponseWriter, r *http.Request) {
 	data := addPush{}
 	_, err := app_controller.GetAuthContent(w, r, &data)
 	if err != nil {
+		app_controller.ReturnPreconditionFailed(w, err.Error())
 		return
 	}
 

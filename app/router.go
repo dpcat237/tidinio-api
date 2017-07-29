@@ -45,10 +45,10 @@ var routes = Routes{
 	},
 	/** Device **/
 	Route{
-		"Add push ID for device. Now Firebase",
-		"POST",
-		"/device/add",
-		api_controller.AddDevice,
+		"Update push notification ID for device. Now Firebase",
+		"PUT",
+		"/device/notification",
+		api_controller.UpdateNotificationId,
 	},
 	/** Feed **/
 	Route{
@@ -133,10 +133,52 @@ var routes = Routes{
 	},
 	/** User **/
 	Route{
+		"User feedback",
+		"POST",
+		"/user/feedback",
+		api_controller.UserFeedback,
+	},
+	Route{
+		"User login",
+		"POST",
+		"/user/login",
+		api_controller.UserLogin,
+	},
+	Route{
 		"User register",
 		"POST",
-		"/user",
+		"/user/register",
 		api_controller.UserRegister,
+	},
+	Route{
+		"User password recovery",
+		"PUT",
+		"/user/password_request/{hash}",
+		api_controller.UserPasswordRecovery,
+	},
+	Route{
+		"User password recovery request",
+		"POST",
+		"/user/password_request",
+		api_controller.UserPasswordRecoveryRequest,
+	},
+	Route{
+		"User preview login",
+		"POST",
+		"/user/preview/login",
+		api_controller.UserPreviewLogin,
+	},
+	Route{
+		"User preview register",
+		"POST",
+		"/user/preview/register",
+		api_controller.UserPreviewRegister,
+	},
+	Route{
+		"User social login",
+		"POST",
+		"/user/social/login",
+		api_controller.UserSocialLogin,
 	},
 }
 

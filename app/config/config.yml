@@ -9,3 +9,7 @@ fcm:
 
 redis:
   host: redis
+
+smtp:
+  mailerUser: newpsel@gmail.com
+  mailerPassword: n#06p04e2013r#sNew

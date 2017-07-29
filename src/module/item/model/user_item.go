@@ -28,8 +28,8 @@ func FromUserItemsSync(items []UserItemSync) []UserItem {
 	for _, item := range items {
 		uItem := UserItem{}
 		uItem.ID = item.ID
-		uItem.Unread, _ = conv.Int(item.Unread)
-		uItem.Stared, _ = conv.Int(item.Stared)
+		uItem.Unread = conv.Int(item.Unread)
+		uItem.Stared = conv.Int(item.Stared)
 		result = append(result, uItem)
 	}
 
@@ -68,8 +68,8 @@ func MergeToUserItemSync(item Item, userItem UserItem) UserItemSync {
 	result.Title = item.Title
 	result.Link = item.Link
 	result.Content = item.Content
-	result.Stared, _ = conv.Bool(userItem.Stared)
-	result.Unread, _ = conv.Bool(userItem.Unread)
+	result.Stared = conv.Bool(userItem.Stared)
+	result.Unread = conv.Bool(userItem.Unread)
 	result.PublishedAt = item.PublishedAt
 
 	return result

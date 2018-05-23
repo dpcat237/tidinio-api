@@ -18,6 +18,13 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
+	/** API **/
+	Route{
+		"Documentation version 2",
+		"GET",
+		"/doc/v2",
+		api_controller.Documentation,
+	},
 	/** Article **/
 	Route{
 		"Add shared article",

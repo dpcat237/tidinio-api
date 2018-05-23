@@ -36,5 +36,5 @@ func InitConnection() {
 	//db.DB().SetMaxIdleConns(1)
 	db.LogMode(true)
 
-	Conn = (*db)
+	Conn = *db
 }

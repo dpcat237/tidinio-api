@@ -5,7 +5,7 @@ database:
   name: tidinio
 
 fcm:
-  serverKey: "AAAACFnF9nM:APA91bHWPqMubkkZVCxwh17rk-zV7L4NtNE7xwXleh41nXlzv-myuOh8eZ9i88pHObNo39CVgfmPE1sC1yciih_Np_lXNKnVXZsuQ6heEx_DmRhIvHe6-T-eSVrOsynnOHDa0awN_N5I"
+  serverKey: ""
 
 redis:
   host: redis_container
